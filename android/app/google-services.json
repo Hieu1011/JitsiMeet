@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "247576720197",
+    "project_id": "jitsimeet-1234",
+    "storage_bucket": "jitsimeet-1234.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:247576720197:android:46337e98438a992723042c",
+        "android_client_info": {
+          "package_name": "com.jitsimeet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApkmqTfKcE2noxjqqjHfsj4NIzlYHJx0A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
