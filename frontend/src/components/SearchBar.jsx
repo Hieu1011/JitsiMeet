@@ -1,28 +1,31 @@
 import React from 'react'
-import {StyleSheet, TextInput, View,} from 'react-native'
-import Feather from 'react-native-vector-icons/Feather'
+import {StyleSheet, TextInput, View} from 'react-native'
+import AntDesign from 'react-native-vector-icons/AntDesign'
 import Entypo from 'react-native-vector-icons/Entypo'
 import {COLORS} from '../../constants'
 
-const SearchBar = ({searchPhrase, setSearchPhrase}) => {
+const SearchBar = ({searchQuery, setSearchQuery, onChangeText}) => {
   return (
     <View style={styles.container}>
-      <Feather name="search" size={20} color="black" />
-      <View style={styles.searchBar}>
-        <TextInput
-          style={styles.input}
-          placeholder="Search"
-          value={searchPhrase}
-          onChangeText={setSearchPhrase}
-        />
-      </View>
-      {searchPhrase !== '' && (
+      <AntDesign name="search1" size={16} color="black" />
+      <TextInput
+        style={styles.input}
+        placeholder="Search"
+        value={searchQuery}
+        onChangeText={(query) => {
+          setSearchQuery(query)
+            onChangeText && onChangeText(query)
+        }}
+        textAlignVertical="center"
+      />
+      {searchQuery !== '' && (
         <Entypo
           name="cross"
           size={20}
           color="black"
           onPress={() => {
-            setSearchPhrase('')
+            setSearchQuery('')
+            onChangeText && onChangeText('')
           }}
         />
       )}
@@ -40,18 +43,15 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
     width: '90%',
+    minHeight: 35,
     backgroundColor: COLORS.grey,
-    borderRadius: 15,
+    borderRadius: 10,
     paddingHorizontal: 10
   },
-  searchBar: {
-    paddingHorizontal: 5,
-    flexDirection: 'row',
-    width: '85%',
-    alignItems: 'center'
-  },
   input: {
-    fontSize: 20,
-    width: '85%'
+    flex: 1,
+    fontSize: 14,
+    marginLeft: 5,
+    paddingVertical: 0 
   }
 })

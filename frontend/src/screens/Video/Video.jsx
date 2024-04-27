@@ -6,12 +6,11 @@ const Video = ({navigation}) => {
   const [room, onChangeRoom] = useState('')
 
   return (
-    <View
-      style={styles.container}>
+    <View style={styles.container}>
       <TextInput
         onChangeText={onChangeRoom}
         placeholder="Enter room name here"
-        style={{color: 'black', padding: 32}}
+        style={{color: 'black', padding: 32, textAlign: 'center'}}
         value={room}
       />
       <Button

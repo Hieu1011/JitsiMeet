@@ -12,7 +12,7 @@ const Stack = createNativeStackNavigator()
 const RootNavigation = () => {
   return (
     <Stack.Navigator
-      initialRouteName="Splash"
+      initialRouteName="BottomNavigator"
       screenOptions={{
         headerShown: false,
         presentation: 'modal',

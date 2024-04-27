@@ -1,50 +1,128 @@
+import React, {useEffect, useState} from 'react'
 import {
-  FlatList,
-  Keyboard,
-  TouchableWithoutFeedback,
   KeyboardAvoidingView,
   SafeAreaView,
-  Text,
-  View
+  TouchableOpacity,
+  View,
+  Text
 } from 'react-native'
-import React, {useState} from 'react'
-import Title from '../../components/Title'
-import {COLORS} from '../../../constants'
-import styles from './home.style'
+import {Avatar, Menu, Modal, PaperProvider} from 'react-native-paper'
+import AntDesign from 'react-native-vector-icons/AntDesign'
+import {filter} from 'lodash'
 import SearchBar from '../../components/SearchBar'
 import List from '../../components/List'
+import Title from '../../components/Title'
 import Video from '../Video/Video'
+import {COLORS, images} from '../../../constants'
+import styles from './home.style'
+import {meeting} from '../../../assets/data/meetingData'
 
 const Home = ({navigation}) => {
-  const [searchPhrase, setSearchPhrase] = useState('')
-  const [data, setData] = useState()
+  const [isLoading, setIsLoading] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [menuVisible, setMenuVisible] = useState(false)
+  const [videoVisible, setVideoVisible] = useState(false)
+  const [data, setData] = useState([])
+  const [error, setError] = useState(null)
+  const [fullData, setFullData] = useState([])
+
+  useEffect(() => {
+    setIsLoading(true)
+    setData(meeting)
+    setFullData(meeting)
+  }, [])
+
+  const toggleMenu = () => {
+    setMenuVisible(prevVisible => !prevVisible)
+  }
+  const toggleVideo = () => {
+    setVideoVisible(prevVisible => !prevVisible)
+  }
+
+  const handleSearch = query => {
+    const formattedQuery = query.toLowerCase()
+    const filteredData = filter(fullData, room => {
+      
+      return contains(room, formattedQuery)
+    })
+    setData(filteredData)
+  }
+ 
+  const contains = ({title}, query) => {
+    if (title.toLowerCase()?.includes(query)) {
+      return true
+    }
+
+    return false
+  }
+
+  if (error) {
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <Text>
+          Error in fetching data ... Please check your internet connection!{' '}
+        </Text>
+      </View>
+    )
+  }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View>
-        <Title
-          title="Welcome to Video Call App"
-          size={24}
-          weight="500"
-          color={COLORS.secondary}
-          style={{marginLeft: 10}}
-        />
-      </View>
+      <PaperProvider>
+        <SafeAreaView style={styles.container}>
+          <View style={styles.header}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                alignItems: 'center',
+                paddingTop: 5,
+                paddingBottom: 10
+              }}>
+              <Avatar.Image
+                style={styles.avatar}
+                source={images.hero1}
+                size={32}
+              />
+              <Title
+                title="Welcome to Video Call App"
+                size={22}
+                weight="500"
+                color={COLORS.secondary}
+              />
 
-      <KeyboardAvoidingView style={{flex: 1}}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-          <View style={{flex: 1}}>
+              <Menu
+                visible={menuVisible}
+                onDismiss={toggleMenu}
+                anchor={
+                  <TouchableOpacity onPress={toggleMenu}>
+                    <AntDesign name="plus" size={20} color={COLORS.black} />
+                  </TouchableOpacity>
+                }>
+                <Menu.Item onPress={() => {}} title="Create Group" />
+                <Menu.Item onPress={toggleVideo} title="Join Meeting" />
+              </Menu>
+            </View>
             <SearchBar
-              searchPhrase={searchPhrase}
-              setSearchPhrase={setSearchPhrase}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              onChangeText={query => handleSearch(query)}
             />
-            <List data={data} />
-
-            <Video navigation={navigation}/>
           </View>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+
+          <List data={data} navigation={navigation} />
+
+          {/* <Portal> */}
+
+          <Modal
+            visible={videoVisible}
+            onDismiss={toggleVideo}
+            contentContainerStyle={styles.modal}>
+            <Video navigation={navigation} />
+          </Modal>
+
+          {/* </Portal> */}
+        </SafeAreaView>
+      </PaperProvider>
   )
 }
 

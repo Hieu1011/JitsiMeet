@@ -29,8 +29,6 @@ const Title = props => {
 
 const styles = StyleSheet.create({
   text: {
-    paddingBottom: 16,
-    paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center'
   }

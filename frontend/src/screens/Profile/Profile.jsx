@@ -19,46 +19,58 @@ const Profile = ({visible, setVisible}) => {
     <Modal transparent={true} visible={visible} animationType="slide">
       <Pressable onPress={() => setVisible(false)} style={styles.pressable} />
       <View style={styles.container}>
-        <View>
-          <Title title="Profile" size={24} style={styles.header}></Title>
+        <View style={styles.header}>
+          <Title title="Profile" size={24} style={styles.headerText}></Title>
           <TouchableOpacity
             onPress={() => setVisible(false)}
             style={{
               position: 'absolute',
-              right: 0,
-              margin: 10
+              right: 5,
+              margin: 5
             }}>
             <MaterialIcons name="close" size={24} color={COLORS.black} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.content}>
-          <View>
+          <View style={styles.avatar}>
             <Image
               source={images.hero1}
               resizeMode="cover"
-              style={styles.avatar}
+              style={styles.image}
             />
-            <Text>Bùi Lương Hiếu</Text>
-            <Text>UIT - CNPM</Text>
+            <Text style={styles.title}>Bùi Lương Hiếu</Text>
+            <Text style={[styles.value, {alignSelf: 'center'}]}>
+              UIT - CNPM
+            </Text>
           </View>
 
-          <View>
-            <View>
-              <Text>Email</Text>
-              <Text>20520994@gm.uit.edu.vn</Text>
+          <View style={styles.info}>
+            <View style={styles.infoItem}>
+              <Text style={styles.title}>Email: </Text>
+              <Text style={styles.value}>20520994@gm.uit.edu.vn</Text>
             </View>
 
-            <View>
-              <Text>Phone number</Text>
-              <Text>0999999999</Text>
+            <View style={styles.infoItem}>
+              <Text style={styles.title}>Phone number: </Text>
+              <Text style={styles.value}>0999999999</Text>
             </View>
 
-            <View>
-              <Text>Status</Text>
+            <View style={styles.infoItem}>
+              <Text style={styles.title}>Status: </Text>
               <SelectDropdown
+                rowTextStyle={{textAlign: 'auto'}}
+                rowStyle={{height: 25}}
+                buttonStyle={{
+                  height: 25,
+                  width: 150,
+                  borderWidth: 0.5,
+                  borderRadius: 7,
+                  backgroundColor: COLORS.secondary
+                }}
                 data={status}
-                defaultButtonText="Select Status"></SelectDropdown>
+                defaultButtonText="Select Status"
+              />
             </View>
           </View>
         </View>
