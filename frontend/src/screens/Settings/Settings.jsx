@@ -11,8 +11,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import {COLORS, FONTS} from '../../../constants'
 import styles from './settings.style'
 import Profile from '../Profile/Profile'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Settings = () => {
+const Settings = ({navigation}) => {
   const [openModal, setOpenModal] = useState(false)
 
   const navigateToProfile = () => {
@@ -42,8 +43,15 @@ const Settings = () => {
   const addAccount = () => {
     console.log('Add account ')
   }
-  const logout = () => {
-    console.log('Logout')
+  const logout = async () => {
+    try {
+      await AsyncStorage.removeItem('token')
+
+      navigation.replace('SignIn')
+    }
+    catch (err) {
+
+    }
   }
 
   const accountItems = [

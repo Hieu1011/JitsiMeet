@@ -4,6 +4,7 @@ const express = require("express")
 const mongoose = require('mongoose')
 const cookieParser = require('cookie-parser')
 require('dotenv').config()
+const authRoute = require('./server/routes/authRouter')
 
 const app = express()
 
@@ -29,6 +30,7 @@ const connect = async () => {
 app.use(express.json({limit: '50mb'}));
 app.use(cors(corsOptions));
 app.use(cookieParser());
+app.use('/api/v1', authRoute)
 
 app.listen(port, () => {
     connect()
