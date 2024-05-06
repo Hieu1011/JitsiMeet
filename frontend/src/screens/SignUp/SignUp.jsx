@@ -5,8 +5,7 @@ import {
   Image,
   Pressable,
   TextInput,
-  TouchableOpacity,
-  Alert
+  TouchableOpacity
 } from 'react-native'
 import React, {useState} from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -14,36 +13,10 @@ import CheckBox from '@react-native-community/checkbox'
 import Button from '../../components/Button'
 import {images,COLORS} from '../../../constants'
 import styles from './signUp.style'
-import { register, login } from '../../api/authApi'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignUp = ({navigation}) => {
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [isChecked, setIsChecked] = useState(false)
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [password, setPassword] = useState('')
-
-  const handleSignUp = async () => {
-    const signUpResponse = await register(email, phone, password, username)
-  
-    if (signUpResponse.data === 'User already exists') {
-      Alert.alert(signUpResponse.data)
-    }
-    else {
-      const loginResponse = await login(email, password)
-
-      try {
-        await AsyncStorage.setItem('token', loginResponse.data.token)
-
-        navigation.replace('BottomNavigator')
-      }
-      catch (err) {
-        console.log(err)
-      }
-    }
-  }
   
   return (
     <SafeAreaView style={styles.signUpContainer}>
@@ -57,35 +30,6 @@ const SignUp = ({navigation}) => {
             style={styles.connectLabel}>
             Connect with your friend today!
           </Text>
-        </View>
-
-        <View style={styles.in4InputWrapper}> 
-          <Text
-            style={styles.inputLabel}>
-            Username
-          </Text>
-
-          <View
-            style={{
-              width: '100%',
-              height: 48,
-              borderColor: COLORS.black,
-              borderWidth: 1,
-              borderRadius: 8,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingLeft: 22
-            }}>
-            <TextInput
-              value={username}
-              onChangeText={text => setUsername(text)}
-              placeholder="Enter your username"
-              placeholderTextColor={COLORS.black}
-              style={{
-                width: '100%'
-              }}
-            />
-          </View>
         </View>
 
         <View style={styles.in4InputWrapper}> 
@@ -106,8 +50,6 @@ const SignUp = ({navigation}) => {
               paddingLeft: 22
             }}>
             <TextInput
-              value={email}
-              onChangeText={text => setEmail(text)}
               placeholder="Enter your email address"
               placeholderTextColor={COLORS.black}
               keyboardType="email-address"
@@ -153,8 +95,6 @@ const SignUp = ({navigation}) => {
             />
 
             <TextInput
-              value={phone}
-              onChangeText={text => setPhone(text)}
               placeholder="Enter your phone number"
               placeholderTextColor={COLORS.black}
               keyboardType="numeric"
@@ -187,11 +127,9 @@ const SignUp = ({navigation}) => {
               paddingLeft: 22
             }}>
             <TextInput
-              value={password}
-              onChangeText={text => setPassword(text)}
               placeholder="Enter your password"
               placeholderTextColor={COLORS.black}
-              secureTextEntry={!isPasswordShown}
+              secureTextEntry={isPasswordShown}
               style={{
                 width: '100%'
               }}
@@ -231,7 +169,6 @@ const SignUp = ({navigation}) => {
         <Button
           title="Sign Up"
           filled
-          onPress={handleSignUp}
           style={{
             marginTop: 18,
             marginBottom: 4
@@ -330,7 +267,7 @@ const SignUp = ({navigation}) => {
           <Text style={{fontSize: 16, color: COLORS.black}}>
             Already have an account?
           </Text>
-          <TouchableOpacity onPress={() => navigation.replace('SignIn')}>
+          <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
             <Text
               style={{
                 fontSize: 16,

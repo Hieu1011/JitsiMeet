@@ -92,7 +92,7 @@ const Welcome = ({navigation}) => {
               justifyContent: 'center'
             }}>
             {renderText('Already have an account ?')}
-            <Pressable onPress={() => navigation.replace('SignIn')}>
+            <Pressable onPress={() => navigation.navigate('SignIn')}>
               {renderText('Sign In', {...styles.hyperTxt, marginLeft: 4})}
             </Pressable>
           </View>

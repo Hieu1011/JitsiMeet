@@ -5,45 +5,22 @@ import {
   Image,
   Pressable,
   TextInput,
-  TouchableOpacity,
-  Alert
+  TouchableOpacity
 } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, {useState} from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import CheckBox from '@react-native-community/checkbox'
 import Button from '../../components/Button'
-import { images, COLORS } from '../../../constants'
-import { login } from '../../api/authApi'
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {images,COLORS} from '../../../constants'
 
-const SignIn = ({ navigation }) => {
+const SignIn = ({navigation}) => {
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [isChecked, setIsChecked] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-
-  const handleLogin = async () => {
-    const loginResponse = await login(email, password)
-
-    if (typeof loginResponse.data === 'string') {
-      Alert.alert(loginResponse.data)
-    }
-    else {
-      try {
-        await AsyncStorage.setItem('token', loginResponse.data.token)
-
-        navigation.replace('BottomNavigator')
-      }
-      catch (err) {
-        console.log(err)
-      }
-    }
-  }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-      <View style={{ flex: 1, marginHorizontal: 22 }}>
-        <View style={{ marginVertical: 22 }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
+      <View style={{flex: 1, marginHorizontal: 22}}>
+        <View style={{marginVertical: 22}}>
           <Text
             style={{
               fontSize: 22,
@@ -64,7 +41,7 @@ const SignIn = ({ navigation }) => {
           </Text>
         </View>
 
-        <View style={{ marginBottom: 12 }}>
+        <View style={{marginBottom: 12}}>
           <Text
             style={{
               fontSize: 16,
@@ -86,8 +63,6 @@ const SignIn = ({ navigation }) => {
               paddingLeft: 22
             }}>
             <TextInput
-              value={email}
-              onChangeText={text => setEmail(text)}
               placeholder="Enter your email address"
               placeholderTextColor={COLORS.black}
               keyboardType="email-address"
@@ -98,7 +73,7 @@ const SignIn = ({ navigation }) => {
           </View>
         </View>
 
-        <View style={{ marginBottom: 12 }}>
+        <View style={{marginBottom: 12}}>
           <Text
             style={{
               fontSize: 16,
@@ -120,11 +95,9 @@ const SignIn = ({ navigation }) => {
               paddingLeft: 22
             }}>
             <TextInput
-              value={password}
-              onChangeText={text => setPassword(text)}
               placeholder="Enter your password"
               placeholderTextColor={COLORS.black}
-              secureTextEntry={!isPasswordShown}
+              secureTextEntry={isPasswordShown}
               style={{
                 width: '100%'
               }}
@@ -152,7 +125,7 @@ const SignIn = ({ navigation }) => {
             alignItems: 'center'
           }}>
           <CheckBox
-            style={{ marginRight: 8 }}
+            style={{marginRight: 8}}
             value={isChecked}
             onValueChange={setIsChecked}
             color={isChecked ? COLORS.primary : undefined}
@@ -168,7 +141,7 @@ const SignIn = ({ navigation }) => {
             marginTop: 18,
             marginBottom: 4
           }}
-          onPress={handleLogin}
+          onPress={() => navigation.navigate('BottomNavigator')}
         />
 
         <View
@@ -185,7 +158,7 @@ const SignIn = ({ navigation }) => {
               marginHorizontal: 10
             }}
           />
-          <Text style={{ fontSize: 14 }}>Or</Text>
+          <Text style={{fontSize: 14}}>Or</Text>
           <View
             style={{
               flex: 1,
@@ -260,10 +233,10 @@ const SignIn = ({ navigation }) => {
             justifyContent: 'center',
             marginVertical: 22
           }}>
-          <Text style={{ fontSize: 16, color: COLORS.black }}>
+          <Text style={{fontSize: 16, color: COLORS.black}}>
             Don't have an account ?{' '}
           </Text>
-          <Pressable onPress={() => navigation.replace('SignUp')}>
+          <Pressable onPress={() => navigation.navigate('SignUp')}>
             <Text
               style={{
                 fontSize: 16,

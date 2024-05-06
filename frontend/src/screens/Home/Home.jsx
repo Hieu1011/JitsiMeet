@@ -15,7 +15,7 @@ import Title from '../../components/Title'
 import Video from '../Video/Video'
 import {COLORS, images} from '../../../constants'
 import styles from './home.style'
-import {meeting} from '../../../assets/data/meetingData'
+import { room } from '../../../assets/data/roomData'
 
 const Home = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -28,8 +28,8 @@ const Home = ({navigation}) => {
 
   useEffect(() => {
     setIsLoading(true)
-    setData(meeting)
-    setFullData(meeting)
+    setData(room)
+    setFullData(room)
   }, [])
 
   const toggleMenu = () => {
