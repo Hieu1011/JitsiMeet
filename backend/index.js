@@ -22,7 +22,7 @@ const connect = async () => {
 
         console.log("Mongo database is connected")
     } catch (error) {
-        console.log("Mongo database is failed to connect")
+        console.log("Mongo database is failed to connect", error)
     }
 }
 

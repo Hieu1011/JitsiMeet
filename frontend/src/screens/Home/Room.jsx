@@ -13,6 +13,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import styles from './room.style'
 import {COLORS} from '../../../constants'
 import Title from '../../components/Title'
+import { channel } from '../../../assets/data/channelData'
 
 const Room = ({route, navigation}) => {
   const data = route.params
@@ -43,7 +44,13 @@ const Room = ({route, navigation}) => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.content}></View>
+      <View style={styles.content}>
+        {channel.filter((item) => item.roomId === data.id).map((item) => (
+          <TouchableOpacity key={item.id} style={{padding: 10, marginVertical: 5,}} onPress={()=> navigation.navigate('Channel', {item, roomTitle: data.title})}>
+            <Text style={{color: COLORS.black}}>{item.title}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
       <Modal transparent={true} visible={visible} animationType="fade">
         <Pressable onPress={() => setVisible(false)} style={styles.pressable} />
