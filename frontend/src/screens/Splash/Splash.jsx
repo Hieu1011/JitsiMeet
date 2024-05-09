@@ -1,11 +1,15 @@
 import {SafeAreaView, Image} from 'react-native'
 import React, {useEffect} from 'react'
-import styles from './splash.style'
+import {jwtDecode} from 'jwt-decode'
+import {useDispatch} from 'react-redux'
+import {setInfo, setFeatures, setRoom} from '../../redux/slices/userSlice'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import {images} from '../../../constants'
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { jwtDecode } from 'jwt-decode';
+import styles from './splash.style'
 
 const Splash = ({navigation}) => {
+  const dispatch = useDispatch()
+
   const checkTokenExpired = async () => {
     try {
       const token = await AsyncStorage.getItem('token')
@@ -23,12 +27,13 @@ const Splash = ({navigation}) => {
         await AsyncStorage.removeItem('token')
 
         navigation.replace('Welcome')
-      }
-      else {
+      } else {
+        dispatch(setInfo(decoded.context.user))
+        dispatch(setFeatures(decoded.context.features))
+        dispatch(setRoom(decoded.room))
         navigation.replace('BottomNavigator')
       }
-    }
-    catch (err) {
+    } catch (err) {
       console.log(err)
     }
   }

@@ -18,6 +18,9 @@ const styles = StyleSheet.create({
     color: COLORS.black,
     textAlign: 'center',
   },
+  content:{
+    paddingHorizontal: 15,
+  },
   modal:{
     width: '100%',
     backgroundColor: COLORS.white,

@@ -11,14 +11,17 @@ import {
 import React, {useState} from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import CheckBox from '@react-native-community/checkbox'
+import { useDispatch } from 'react-redux'
 import { jwtDecode } from 'jwt-decode'
 import { register, login } from '../../api/authApi'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {setInfo, setFeatures, setRoom} from '../../redux/slices/userSlice'
 import Button from '../../components/Button'
 import {images,COLORS} from '../../../constants'
 import styles from './signUp.style'
 
 const SignUp = ({navigation}) => {
+  const dispatch = useDispatch()
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [isChecked, setIsChecked] = useState(false)
   const [username, setUsername] = useState('')
@@ -40,6 +43,9 @@ const SignUp = ({navigation}) => {
         await AsyncStorage.setItem('token', loginResponse.data.token)
         await AsyncStorage.setItem('userInfo', JSON.stringify(decoded))
 
+        dispatch(setInfo(decoded.context.user))
+        dispatch(setFeatures(decoded.context.features))
+        dispatch(setRoom(decoded.room))
         navigation.replace('BottomNavigator')
       }
       catch (err) {

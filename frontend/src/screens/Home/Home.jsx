@@ -9,15 +9,16 @@ import {
 import {Avatar, Menu, Modal, PaperProvider} from 'react-native-paper'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import {filter} from 'lodash'
+import { useSelector } from 'react-redux'
+import Video from '../Video/Video'
 import SearchBar from '../../components/SearchBar'
 import List from '../../components/List'
 import Title from '../../components/Title'
-import Video from '../Video/Video'
-import {COLORS, images} from '../../../constants'
-import styles from './home.style'
-import { room } from '../../../assets/data/roomData'
 import CreateRoom from '../../components/CreateRoom'
 import { getAllRooms } from '../../api/roomApi'
+import {COLORS, images} from '../../../constants'
+import styles from './home.style'
+
 
 const Home = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -37,8 +38,16 @@ const Home = ({navigation}) => {
     setFullData(result.reverse())
   }
 
+  const userInfo = useSelector(state => state.user.info)
+  const userFeatures = useSelector(state => state.user.features)
+  const userRoom = useSelector(state => state.user.room)
+
   useEffect(() => {
     loadRooms()
+    setIsLoading(true)
+    setData(room)
+    setFullData(room)
+    console.log(userInfo, userFeatures, userRoom);
   }, [])
 
   const toggleMenu = () => {

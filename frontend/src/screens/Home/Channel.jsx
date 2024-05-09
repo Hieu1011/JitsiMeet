@@ -27,7 +27,9 @@ const normalizeString = str => {
 
 const Channel = ({route, navigation}) => {
   const {item, roomTitle} = route.params
-  const room = `vpaas-magic-cookie-aa87917959cf4f0f95d3b5eac48edb1e/${normalizeString(item.title)}`
+  console.log(normalizeString(roomTitle), normalizeString(item.title));
+  
+  const room = `vpaas-magic-cookie-aa87917959cf4f0f95d3b5eac48edb1e/${normalizeString(roomTitle)}_${normalizeString(item.title)}`
 
   return (
     <SafeAreaView style={styles.container}>
