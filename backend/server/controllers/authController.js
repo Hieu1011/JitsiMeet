@@ -20,7 +20,7 @@ const register = async (req, res) => {
             email: email,
             password: password,
             phone: phone,   
-            avatarUrl: '',
+            avatarUrl: 'https://firebasestorage.googleapis.com/v0/b/jitsimeet-1234.appspot.com/o/person.jpg?alt=media&token=864aad43-e4cb-4b1b-bf93-9cff57e16d15',
             role: 3
         });
 
@@ -68,41 +68,6 @@ const login = async (req, res) => {
 
         const now = new Date()
 
-        // const token = jwt.sign(
-        //     {
-        //         aud: "jitsi",
-        //         context: {
-        //             user: {
-        //                 id: _id,
-        //                 name: username,
-        //                 avatar: avatarUrl,
-        //                 email: email,
-        //                 moderator: role === 1 ? "true" : "false"
-        //             },
-
-        //             features: {
-        //                 livestreaming: role === 1 ? "true" : "false",
-        //                 recording: role === 1 ? "true" : "false",
-        //                 transcription: role === 1 ? "true" : "false",
-        //                 "outbound-call": role === 1 ? "true" : "false"
-        //             }
-        //         },
-        //         iss: "chat",
-        //         room: "*",
-        //         sub: "vpaas-magic-cookie-aa87917959cf4f0f95d3b5eac48edb1e",
-        //         // exp: Math.round((now.setDate(now.getDate() + 5)) / 1000),
-        //         // nbf: (Math.round((new Date).getTime() / 1000) - 10)
-        //     },
-        //     process.env.JWT_SECRET_KEY,
-        //     {
-        //         // algorithm: "RS256",
-        //         header: {
-        //             kid: "vpaas-magic-cookie-aa87917959cf4f0f95d3b5eac48edb1e/272d95"
-        //         },
-        //         expiresIn: "5d"
-        //     }
-        // )
-
         const token = jwt.sign({
             aud: 'jitsi',
             context: {
@@ -111,7 +76,7 @@ const login = async (req, res) => {
                 name: username,
                 avatar: avatarUrl,
                 email: email,
-                moderator: 'true'
+                moderator: 'true',
               },
               features: {
                 livestreaming: 'true',

@@ -8,7 +8,7 @@ const List = ({data, navigation}) => {
       data={data}
       style={styles.flatList}
       renderItem={({item}) => <ListItem data={item} navigation={navigation} />}
-      keyExtractor={item => item.id}
+      keyExtractor={item => item._id}
       numColumns={2}
     />
   )

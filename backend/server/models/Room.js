@@ -2,10 +2,28 @@ const mongoose = require('mongoose');
 
 const roomSchema = new mongoose.Schema(
     {
-        roomName: {
+        hostId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+
+        title: {
             type: String,
             required: true
         },
+
+        avatar: {
+            type: String,
+            required: true 
+        },
+
+        desc: {
+            type: String,
+            required: true 
+        },
+
+        meetings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Meeting' }],
 
         participants: [
             {
@@ -17,11 +35,12 @@ const roomSchema = new mongoose.Schema(
 
                 joinedAt: {
                     type: Date,
-                    required: true,
                     default: Date.now
                 }
             }
-        ]
+        ],
+
+        pendingUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
     }
 )
 
