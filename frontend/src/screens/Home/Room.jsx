@@ -13,13 +13,13 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import styles from './room.style'
 import {COLORS} from '../../../constants'
 import Title from '../../components/Title'
-import { channel } from '../../../assets/data/channelData'
+import {channel} from '../../../assets/data/channelData'
 
 const Room = ({route, navigation}) => {
   const data = route.params
   const [visible, setVisible] = useState(false)
 
-  console.log(route.params)
+  console.log('Room: ', data)
 
   return (
     <SafeAreaView style={styles.container}>
@@ -45,11 +45,26 @@ const Room = ({route, navigation}) => {
       </View>
 
       <View style={styles.content}>
-        {channel.filter((item) => item.roomId === data.id).map((item) => (
-          <TouchableOpacity key={item.id} style={{padding: 10, marginVertical: 5,}} onPress={()=> navigation.navigate('Channel', {item, roomTitle: data.title})}>
-            <Text style={{color: COLORS.black}}>{item.title}</Text>
-          </TouchableOpacity>
-        ))}
+        <View>
+        <Text  style={{fontSize: 14, color: COLORS.black}}>
+          {data.desc}
+        </Text>
+        </View>
+
+        <View style={{marginTop: 10}}>
+          {channel
+            .filter(item => item.roomId === data.id)
+            .map(item => (
+              <TouchableOpacity
+                key={item.id}
+                style={{marginVertical: 8, padding: 10, borderWidth: 0.5}}
+                onPress={() =>
+                  navigation.navigate('Channel', {item, roomTitle: data.title})
+                }>
+                <Text style={{fontSize: 15, fontWeight: 400, color: COLORS.black}}>{item.title}</Text>
+              </TouchableOpacity>
+            ))}
+        </View>
       </View>
 
       <Modal transparent={true} visible={visible} animationType="fade">
@@ -68,7 +83,11 @@ const Room = ({route, navigation}) => {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.modalItem}>
-              <MaterialCommunityIcons name="account-arrow-left-outline" size={24} color={COLORS.black} />
+              <MaterialCommunityIcons
+                name="account-arrow-left-outline"
+                size={24}
+                color={COLORS.black}
+              />
               <Text style={{fontSize: 16, color: COLORS.black}}>
                 Rời khỏi nhóm
               </Text>

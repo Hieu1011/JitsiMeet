@@ -16,6 +16,7 @@ import Video from '../Video/Video'
 import {COLORS, images} from '../../../constants'
 import styles from './home.style'
 import { room } from '../../../assets/data/roomData'
+import { useSelector } from 'react-redux'
 
 const Home = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -26,10 +27,16 @@ const Home = ({navigation}) => {
   const [error, setError] = useState(null)
   const [fullData, setFullData] = useState([])
 
+  const userInfo = useSelector(state => state.user.info)
+  const userFeatures = useSelector(state => state.user.features)
+  const userRoom = useSelector(state => state.user.room)
+
   useEffect(() => {
     setIsLoading(true)
     setData(room)
     setFullData(room)
+    console.log(userInfo, userFeatures, userRoom);
+    
   }, [])
 
   const toggleMenu = () => {

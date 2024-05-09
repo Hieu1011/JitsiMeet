@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { JitsiMeeting } from '@jitsi/react-native-sdk/index'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ActivityIndicator, View, Text, SafeAreaView } from 'react-native'
+import { LogBox } from 'react-native';
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 const Meeting = ({ navigation, route }) => {
   const jitsiMeeting = useRef(null)
@@ -60,6 +62,7 @@ const Meeting = ({ navigation, route }) => {
     <JitsiMeeting
       eventListeners={eventListeners}
       ref={jitsiMeeting}
+      config={{dialInConfCodeUrl: 111}}
       style={{flex: 1}}
       room={room}
       token={token}
