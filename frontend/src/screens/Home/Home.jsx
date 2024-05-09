@@ -16,6 +16,8 @@ import Video from '../Video/Video'
 import {COLORS, images} from '../../../constants'
 import styles from './home.style'
 import { room } from '../../../assets/data/roomData'
+import CreateRoom from '../../components/CreateRoom'
+import { getAllRooms } from '../../api/roomApi'
 
 const Home = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -25,11 +27,18 @@ const Home = ({navigation}) => {
   const [data, setData] = useState([])
   const [error, setError] = useState(null)
   const [fullData, setFullData] = useState([])
+  const [showModal, setShowModal] = useState(false)
+
+  const loadRooms = async () => {
+    const result = await getAllRooms()
+
+    setIsLoading(true)
+    setData(result)
+    setFullData(result.reverse())
+  }
 
   useEffect(() => {
-    setIsLoading(true)
-    setData(room)
-    setFullData(room)
+    loadRooms()
   }, [])
 
   const toggleMenu = () => {
@@ -38,6 +47,7 @@ const Home = ({navigation}) => {
   const toggleVideo = () => {
     setVideoVisible(prevVisible => !prevVisible)
   }
+ 
 
   const handleSearch = query => {
     const formattedQuery = query.toLowerCase()
@@ -98,9 +108,16 @@ const Home = ({navigation}) => {
                     <AntDesign name="plus" size={20} color={COLORS.black} />
                   </TouchableOpacity>
                 }>
-                <Menu.Item onPress={() => {}} title="Create Group" />
+                <Menu.Item onPress={() => {
+                  setShowModal(true)
+                  toggleMenu()
+                }} 
+                title="Create Room" 
+                />
                 <Menu.Item onPress={toggleVideo} title="Join Meeting" />
               </Menu>
+
+              <CreateRoom isShow={showModal} setIsShow={setShowModal} loadRooms={loadRooms}/>
             </View>
             <SearchBar
               searchQuery={searchQuery}

@@ -5,7 +5,7 @@ import {Card, Text, Badge} from 'react-native-paper'
 const ListItem = ({data, navigation}) => {
   return (
     <Card style={styles.card} onPress={() => navigation.navigate('Room', data)}>
-      <Card.Cover source={data.avt} style={styles.img} />
+      <Card.Cover source={{uri: data.avatar}} style={styles.img} />
       <Card.Title
         title={data.title}
         titleNumberOfLines={2}
