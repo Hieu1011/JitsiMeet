@@ -14,13 +14,21 @@ import styles from './room.style'
 import {COLORS} from '../../../constants'
 import Title from '../../components/Title'
 import {channel} from '../../../assets/data/channelData'
+import {useSelector} from 'react-redux'
 
 const Room = ({route, navigation}) => {
   const data = route.params
+  const user = useSelector(state => state.user.info)
   const [visible, setVisible] = useState(false)
 
   console.log('Room: ', data)
+  console.log('User: ', user)
 
+  const handleDeleteRoom = () => {
+  }
+  const handleLeaveRoom = () => {
+  }
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -45,15 +53,13 @@ const Room = ({route, navigation}) => {
       </View>
 
       <View style={styles.content}>
-        <View>
-        <Text  style={{fontSize: 14, color: COLORS.black}}>
-          {data.desc}
-        </Text>
+        <View style={{paddingLeft: 20,}}>
+          <Text style={{fontSize: 14, color: COLORS.black}}>{data.desc}</Text>
         </View>
 
-        <View style={{marginTop: 10}}>
+        {/* <View style={{marginTop: 10}}>
           {channel
-            .filter(item => item.roomId === data.id)
+            .filter(item => item.roomId === data._id)
             .map(item => (
               <TouchableOpacity
                 key={item.id}
@@ -61,10 +67,13 @@ const Room = ({route, navigation}) => {
                 onPress={() =>
                   navigation.navigate('Channel', {item, roomTitle: data.title})
                 }>
-                <Text style={{fontSize: 15, fontWeight: 400, color: COLORS.black}}>{item.title}</Text>
+                <Text
+                  style={{fontSize: 15, fontWeight: 400, color: COLORS.black}}>
+                  {item.title}
+                </Text>
               </TouchableOpacity>
             ))}
-        </View>
+        </View> */}
       </View>
 
       <Modal transparent={true} visible={visible} animationType="fade">
@@ -82,14 +91,27 @@ const Room = ({route, navigation}) => {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.modalItem}>
+            {user.moderator && (
+              <TouchableOpacity style={styles.modalItem} onPress={() => handleDeleteRoom()}>
+                <MaterialCommunityIcons
+                  name="delete-outline"
+                  size={24}
+                  color={COLORS.black}
+                />
+                <Text style={{fontSize: 16, color: COLORS.black}}>
+                  Xoá phòng
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity style={styles.modalItem} onPress={() => handleLeaveRoom()}>
               <MaterialCommunityIcons
                 name="account-arrow-left-outline"
                 size={24}
                 color={COLORS.black}
               />
               <Text style={{fontSize: 16, color: COLORS.black}}>
-                Rời khỏi nhóm
+                Rời khỏi phòng
               </Text>
             </TouchableOpacity>
           </View>

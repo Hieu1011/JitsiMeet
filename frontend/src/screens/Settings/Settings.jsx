@@ -1,24 +1,26 @@
-import {
-  SafeAreaView,
-  ScrollView,
-  Text,
-  View,
-  TouchableOpacity
-} from 'react-native'
+import {useTheme, Text, Button, List} from 'react-native-paper'
 import React, {useState} from 'react'
-import Title from '../../components/Title'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import {COLORS, FONTS} from '../../../constants'
+import {
+  View,
+  Image,
+  ScrollView,
+  SafeAreaView,
+  Alert
+} from 'react-native'
+import {useSelector} from 'react-redux'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import Profile from './Profile/Profile'
+import {statusObject} from '../../../assets/data/statusData'
+import {images} from '../../../constants'
 import styles from './settings.style'
-import Profile from '../Profile/Profile'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Settings = ({navigation}) => {
+  const theme = useTheme()
   const [openModal, setOpenModal] = useState(false)
+  const user = useSelector(state => state.user)
+  const userInfo = useSelector(state => state.user.info)
 
-  const navigateToProfile = () => {
-    setOpenModal(true)
-  }
   const navigateToSecurity = () => {
     console.log('Security function')
   }
@@ -27,9 +29,6 @@ const Settings = ({navigation}) => {
   }
   const navigateToPrivacy = () => {
     console.log('Privacy function')
-  }
-  const navigateToSubscription = () => {
-    console.log('Subscription function')
   }
   const navigateToSupport = () => {
     console.log('Support function')
@@ -40,138 +39,130 @@ const Settings = ({navigation}) => {
   const navigateToReportProblem = () => {
     console.log('Report a problem')
   }
-  const addAccount = () => {
-    console.log('Add account ')
-  }
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem('token')
-
-      navigation.replace('SignIn')
-    }
-    catch (err) {
-
+      Alert.alert('Log out?', 'Do you want to log out?', [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel'
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            await AsyncStorage.removeItem('token')
+            navigation.replace('SignIn')
+          }
+        }
+      ])
+    } catch (err) {
+      console.error('Error logging out:', err)
+      Alert.alert('Error', 'Failed to log out. Please try again.')
     }
   }
 
-  const accountItems = [
+  const settingItems = [
     {
-      icon: 'person-outline',
-      text: 'Profile',
-      action: navigateToProfile
+      title: 'Security',
+      desc: 'Manage your account security settings.',
+      icon: 'security',
+      action: navigateToSecurity
     },
-    {icon: 'security', text: 'Security', action: navigateToSecurity},
     {
-      icon: 'notifications-none',
-      text: 'Notifications',
+      title: 'Notifications',
+      desc: 'Adjust your notification preferences.',
+      icon: 'bell-outline',
       action: navigateToNotifications
     },
-    {icon: 'lock-outline', text: 'Privacy', action: navigateToPrivacy}
-  ]
-  const supportItems = [
     {
-      icon: 'credit-card',
-      text: 'My Subscription',
-      action: navigateToSubscription
+      title: 'Privacy',
+      desc: 'Control your privacy settings.',
+      icon: 'lock-outline',
+      action: navigateToPrivacy
     },
-    {icon: 'help-outline', text: 'Help & Support', action: navigateToSupport},
     {
-      icon: 'info-outline',
-      text: 'Terms and Policies',
+      title: 'Help & Support',
+      desc: 'Get help and support from our team.',
+      icon: 'help-circle-outline',
+      action: navigateToSupport
+    },
+    {
+      title: 'Terms and Policies',
+      desc: 'Read our terms and policies.',
+      icon: 'information-outline',
       action: navigateToTermsAndPolicies
-    }
-  ]
-  const actionsItems = [
+    },
     {
-      icon: 'outlined-flag',
-      text: 'Report a problem',
+      title: 'Report a problem',
+      desc: 'Report any problems or issues you encounter.',
+      icon: 'flag-variant-outline',
       action: navigateToReportProblem
     },
-    {icon: 'people-outline', text: 'Add Account', action: addAccount},
-    {icon: 'logout', text: 'Log out', action: logout}
+    {
+      title: 'Log out',
+      desc: 'Log out of your account.',
+      icon: 'logout',
+      action: logout
+    }
   ]
 
-  const renderSettingsItem = ({icon, text, action}) => (
-    <TouchableOpacity
+  const renderSettingsItem = ({title, desc, icon, action}) => (
+    <List.Item
+      title={title}
+      description={desc}
+      left={() => <List.Icon style={styles.settingCenter} icon={icon} />}
+      right={() => <List.Icon icon="chevron-right" />}
       onPress={action}
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 8,
-        paddingLeft: 12,
-        borderRadius: 12,
-        marginVertical: 3,
-        backgroundColor: COLORS.grey
-      }}>
-      <MaterialIcons name={icon} size={24} color="black" />
-      <Text
-        style={{
-          marginLeft: 36,
-          ...FONTS.body1,
-          fontWeight: 600,
-          fontSize: 16
-        }}>
-        {text}{' '}
-      </Text>
-    </TouchableOpacity>
+    />
   )
+  const renderStatusIcon = (statusName) => {
+    const statusItem = statusObject.find(item => item.name === statusName)
+    if (statusItem) {
+      return (
+        <MaterialCommunityIcons
+          name={statusItem.icon}
+          size={18}
+          color={statusItem.color}
+        />
+      )
+    } else {
+      return null
+    }
+  }  
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Title
-        title="Settings"
-        size={32}
-        weight="500"
-        color={COLORS.black}
-        style={{alignSelf: 'center'}}
-      />
-
-      <ScrollView style={{marginHorizontal: 12}}>
-        {/* Account Settings */}
-        <View style={{marginBottom: 12}}>
-          <Title title="Account" size={18} color={COLORS.black} />
-          <View
-            style={{
-              borderRadius: 12
-            }}>
-            {accountItems.map((item, index) => (
-              <React.Fragment key={index}>
-                {renderSettingsItem(item)}
-              </React.Fragment>
-            ))}
+    <SafeAreaView
+      style={[styles.container, {backgroundColor: theme.colors.background}]}>
+      <View style={styles.profile}>
+        <Image source={images.hero1} style={styles.img} />
+        <View style={styles.userInfo}>
+          <View style={styles.editContainer}>
+            <Text style={styles.userName}>{userInfo.name}</Text>
+            <Button
+              icon="pencil"
+              mode="text"
+              onPress={() => setOpenModal(true)}
+              contentStyle={{flexDirection: 'row-reverse'}}>
+              Edit
+            </Button>
+          </View>
+          <Text>UIT - CNPM</Text>
+          <Text>Email: {userInfo.email}</Text>
+          <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+           {renderStatusIcon(user.status)}
+            <Text>{user.status}</Text>
+            {/* <MaterialCommunityIcons name={status.find((item.name) === user.status)} /> */}
           </View>
         </View>
-
-        {/* Support and About settings */}
-        <View style={{marginBottom: 12}}>
-          <Title title="Support & About" size={18} color={COLORS.black} />
-          <View
-            style={{
-              borderRadius: 12
-            }}>
-            {supportItems.map((item, index) => (
-              <React.Fragment key={index}>
-                {renderSettingsItem(item)}
-              </React.Fragment>
-            ))}
-          </View>
-        </View>
-
-        {/* Actions Settings */}
-        <View style={{marginBottom: 12}}>
-          <Title title="Actions" size={18} color={COLORS.black} />
-          <View
-            style={{
-              borderRadius: 12
-            }}>
-            {actionsItems.map((item, index) => (
-              <React.Fragment key={index}>
-                {renderSettingsItem(item)}
-              </React.Fragment>
-            ))}
-          </View>
-        </View>
-
+      </View>
+      <ScrollView>
+        <List.Section>
+          {settingItems.map((item, index) => (
+            <React.Fragment key={index}>
+              {renderSettingsItem(item)}
+            </React.Fragment>
+          ))}
+        </List.Section>
         <Profile visible={openModal} setVisible={setOpenModal} />
       </ScrollView>
     </SafeAreaView>

@@ -3,7 +3,7 @@ import { images } from "../../constants";
 export const channel = [
   {
     id: 1,
-    roomId: 1,
+    roomId: '663cff2dc5154de9f97c1554',
     title: 'Chung',
     desc: 'The Abandoned Ship is a wrecked ship located on Route 108 in Hoenn, originally being a ship named the S.S. Cactus. The second part of the ship can only be accessed by using Dive and contains the Scanner.',
     meeting:[
