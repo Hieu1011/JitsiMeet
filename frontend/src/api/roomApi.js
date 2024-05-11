@@ -11,6 +11,7 @@ export const createRoom = async (roomName, creatorId, avatar, desc) => {
     }
     catch (err) {
         console.log(err.response.data)
+        throw err
     }
 }
 
@@ -22,6 +23,7 @@ export const getAllRooms = async () => {
     }
     catch (err) {
         console.log(err.response)
+        throw err
     }
 }
 

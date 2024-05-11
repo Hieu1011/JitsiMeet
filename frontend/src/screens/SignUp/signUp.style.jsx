@@ -9,7 +9,7 @@ export default styles = StyleSheet.create({
     },
 
     labelWrapper: {
-        marginVertical: 22
+        marginVertical: 5
     },
 
     createAccountLabel: {

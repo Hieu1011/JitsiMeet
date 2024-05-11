@@ -10,7 +10,6 @@ import Video from '../screens/Video/Video'
 import Meeting from '../screens/Video/Meeting'
 import Calendar from '../screens/Calendar/Calendar'
 import Settings from '../screens/Settings/Settings'
-import Profile from '../screens/Profile/Profile'
 import {COLORS} from '../../constants/theme'
 
 const Tab = createBottomTabNavigator()
@@ -24,8 +23,6 @@ const HomeStack = () => {
         headerShown: false
       }}>
       <Stack.Screen name="Home" component={Home} />
-      {/* <Stack.Screen name="List" component={List} /> */}
-      {/* <Stack.Screen name="ListItem" component={ListItem} /> */}
       <Stack.Screen name="Room" component={Room} />
       <Stack.Screen name="Channel" component={Channel} />
       <Stack.Screen name="Video" component={Video} />
