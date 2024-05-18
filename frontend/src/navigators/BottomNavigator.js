@@ -4,7 +4,8 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import Home from '../screens/Home/Home'
-import Room from '../screens/Home/Room'
+import Room from '../screens/Home/Room/Room'
+import Member from '../screens/Home/Room/Member'
 import Channel from '../screens/Home/Channel'
 import Video from '../screens/Video/Video'
 import Meeting from '../screens/Video/Meeting'
@@ -24,6 +25,7 @@ const HomeStack = () => {
       }}>
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Room" component={Room} />
+      <Stack.Screen name="Member" component={Member} />
       <Stack.Screen name="Channel" component={Channel} />
       <Stack.Screen name="Video" component={Video} />
       <Stack.Screen

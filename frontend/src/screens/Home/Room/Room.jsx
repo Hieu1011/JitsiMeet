@@ -7,19 +7,43 @@ import {
   Pressable
 } from 'react-native'
 import React, {useState} from 'react'
+import { FAB } from 'react-native-paper'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import styles from './room.style'
-import {COLORS} from '../../../constants'
-import Title from '../../components/Title'
-import {channel} from '../../../assets/data/channelData'
+import {COLORS} from '../../../../constants'
+import Title from '../../../components/Title'
+import {channel} from '../../../../assets/data/channelData'
 import {useSelector} from 'react-redux'
+import { getAllMemberRoom } from '../../../api/roomApi'
+
+const normalizeString = str => {
+  // Xóa dấu tiếng Việt
+  str = str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+
+  // Thay thế các ký tự không mong muốn bằng khoảng trắng
+  str = str.replace(/[^\w\s]/gi, '')
+
+  // Loại bỏ khoảng trắng ở đầu và cuối chuỗi
+  str = str.trim()
+
+  // Thay thế khoảng trắng bằng dấu gạch dưới
+  str = str.replace(/\s+/g, '')
+
+  console.log(str)
+  return str
+}
 
 const Room = ({route, navigation}) => {
   const data = route.params
+  
   const user = useSelector(state => state.user.info)
   const [visible, setVisible] = useState(false)
+  const room = `vpaas-magic-cookie-aa87917959cf4f0f95d3b5eac48edb1e/${normalizeString(data.title)}`
 
   console.log('Room: ', data)
   console.log('User: ', user)
@@ -57,7 +81,7 @@ const Room = ({route, navigation}) => {
           <Text style={{fontSize: 14, color: COLORS.black}}>{data.desc}</Text>
         </View>
 
-        {/* <View style={{marginTop: 10}}>
+        <View style={{marginTop: 10}}>
           {channel
             .filter(item => item.roomId === data._id)
             .map(item => (
@@ -73,9 +97,10 @@ const Room = ({route, navigation}) => {
                 </Text>
               </TouchableOpacity>
             ))}
-        </View> */}
+        </View>
       </View>
 
+      <FAB style={{position: 'absolute', bottom: 10, right: 10}} icon='video-outline' size='medium' onPress={() => navigation.navigate('Meeting', {room})}/>
       <Modal transparent={true} visible={visible} animationType="fade">
         <Pressable onPress={() => setVisible(false)} style={styles.pressable} />
         <View style={styles.modal}>
@@ -84,7 +109,7 @@ const Room = ({route, navigation}) => {
           </View>
 
           <View style={styles.modalContent}>
-            <TouchableOpacity style={styles.modalItem}>
+            <TouchableOpacity style={styles.modalItem} onPress={() => navigation.navigate('Member', data)}>
               <Ionicons name="people-outline" size={24} color={COLORS.black} />
               <Text style={{fontSize: 16, color: COLORS.black}}>
                 Xem thành viên

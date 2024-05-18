@@ -177,7 +177,7 @@ const SignIn = ({ navigation }) => {
             marginTop: 18,
             marginBottom: 4
           }}
-          onPress={() => handleLogin()}
+          onPress={handleLogin}
         />
 
         <View

@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   settingCenter: {
-    paddingLeft: 20
+    paddingLeft: 20,
   },
   editContainer: {
     flexDirection: 'row',

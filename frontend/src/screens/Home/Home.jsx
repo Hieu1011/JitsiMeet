@@ -4,12 +4,14 @@ import {
   SafeAreaView,
   TouchableOpacity,
   View,
-  Text
+  Text,
+  Alert,
+  ActivityIndicator
 } from 'react-native'
 import {Avatar, Menu, Modal, PaperProvider} from 'react-native-paper'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import {filter} from 'lodash'
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import Video from '../Video/Video'
 import SearchBar from '../../components/SearchBar'
 import List from '../../components/List'
@@ -18,10 +20,12 @@ import CreateRoom from '../../components/CreateRoom'
 import {getAllRooms} from '../../api/roomApi'
 import {COLORS, images} from '../../../constants'
 import styles from './home.style'
-import {ActivityIndicator} from 'react-native'
 
 const Home = ({navigation}) => {
-  const [isLoading, setIsLoading] = useState(true) // Sử dụng biến isLoading thay cho isFetching và isLoading
+  const dispatch = useDispatch();
+  const userInfo = useSelector(state=> state.user.info)
+  
+  const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [menuVisible, setMenuVisible] = useState(false)
   const [roomVisible, setRoomVisible] = useState(false)
@@ -137,8 +141,12 @@ const Home = ({navigation}) => {
               }>
               <Menu.Item
                 onPress={() => {
-                  setRoomVisible(true)
-                  toggleMenu()
+                  if (userInfo.role !== 3) {
+                    setVideoVisible(true)
+                    toggleMenu()
+                  } else {
+                    Alert.alert('Thông báo', 'Bạn không có quyền tạo phòng')
+                  }
                 }}
                 title="Create Room"
               />
