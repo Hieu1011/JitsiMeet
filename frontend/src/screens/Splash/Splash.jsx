@@ -25,6 +25,8 @@ const Splash = ({navigation}) => {
         navigation.replace('Welcome')
       }
       else {
+        await AsyncStorage.setItem('userInfo', JSON.stringify(decoded.context.user))
+
         navigation.replace('BottomNavigator')
       }
     }

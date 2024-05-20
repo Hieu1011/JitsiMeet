@@ -18,6 +18,7 @@ import styles from './home.style'
 import { room } from '../../../assets/data/roomData'
 import CreateRoom from '../../components/CreateRoom'
 import { getAllRooms } from '../../api/roomApi'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Home = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -28,6 +29,11 @@ const Home = ({navigation}) => {
   const [error, setError] = useState(null)
   const [fullData, setFullData] = useState([])
   const [showModal, setShowModal] = useState(false)
+  const [userInfo, setUserInfo] = useState(null)
+
+  const getUserInfo = async () => {
+    setUserInfo(JSON.parse(await AsyncStorage.getItem('userInfo')))
+  }
 
   const loadRooms = async () => {
     const result = await getAllRooms()
@@ -38,6 +44,7 @@ const Home = ({navigation}) => {
   }
 
   useEffect(() => {
+    getUserInfo()
     loadRooms()
   }, [])
 
@@ -108,12 +115,14 @@ const Home = ({navigation}) => {
                     <AntDesign name="plus" size={20} color={COLORS.black} />
                   </TouchableOpacity>
                 }>
-                <Menu.Item onPress={() => {
-                  setShowModal(true)
-                  toggleMenu()
-                }} 
-                title="Create Room" 
-                />
+                {userInfo?.role === 1 &&
+                  <Menu.Item onPress={() => {
+                    setShowModal(true)
+                    toggleMenu()
+                  }} 
+                  title="Create Room" 
+                  />
+                }
                 <Menu.Item onPress={toggleVideo} title="Join Meeting" />
               </Menu>
 

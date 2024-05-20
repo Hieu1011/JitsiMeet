@@ -33,7 +33,7 @@ const SignIn = ({ navigation }) => {
     else {
       try {
         await AsyncStorage.setItem('token', loginResponse.data.token)
-        await AsyncStorage.setItem('userInfo', JSON.stringify(decoded))
+        await AsyncStorage.setItem('userInfo', JSON.stringify(decoded.context.user))
 
         navigation.replace('BottomNavigator')
       }
