@@ -27,10 +27,12 @@ const Splash = ({navigation}) => {
         await AsyncStorage.removeItem('token')
 
         navigation.replace('Welcome')
+
       } else {
         dispatch(setInfo(decoded.context.user))
         dispatch(setFeatures(decoded.context.features))
         dispatch(setRoom(decoded.room))
+
         navigation.replace('BottomNavigator')
       }
     } catch (err) {

@@ -20,6 +20,11 @@ import CreateRoom from '../../components/CreateRoom'
 import {getAllRooms} from '../../api/roomApi'
 import {COLORS, images} from '../../../constants'
 import styles from './home.style'
+import { room } from '../../../assets/data/roomData'
+import CreateRoom from '../../components/CreateRoom'
+import { getAllRooms } from '../../api/roomApi'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 
 const Home = ({navigation}) => {
   const dispatch = useDispatch();
@@ -33,7 +38,16 @@ const Home = ({navigation}) => {
   const [data, setData] = useState([])
   const [error, setError] = useState(null)
   const [fullData, setFullData] = useState([])
+
+  const [showModal, setShowModal] = useState(false)
+  const [userInfo, setUserInfo] = useState(null)
+
+  const getUserInfo = async () => {
+    setUserInfo(JSON.parse(await AsyncStorage.getItem('userInfo')))
+  }
+
   const [retryCount, setRetryCount] = useState(0)
+
 
   const loadRooms = async () => {
     setIsLoading(true)
@@ -50,28 +64,33 @@ const Home = ({navigation}) => {
   }
 
   useEffect(() => {
-    const MAX_RETRY = 3 // Số lần thử lại tối đa
-    const TIMEOUT = 3000 // Thời gian timeout (3 giây)
 
-    const fetchData = async () => {
-      try {
-        await loadRooms()
-      } catch (error) {
-        // Nếu có lỗi, kiểm tra số lần thử lại
-        if (retryCount < MAX_RETRY) {
-          // Nếu chưa đạt số lần thử lại tối đa, tăng biến đếm và thử lại sau TIMEOUT
-          setRetryCount(retryCount + 1)
-          setTimeout(fetchData, TIMEOUT)
-        } else {
-          // Nếu đã đạt số lần thử lại tối đa, đặt lỗi để thông báo cho người dùng
-          setError(
-            'Error in fetching data. Please check your internet connection!'
-          )
-        }
-      }
-    }
+    getUserInfo()
+    loadRooms()
 
-    fetchData()
+//     const MAX_RETRY = 3 // Số lần thử lại tối đa
+//     const TIMEOUT = 3000 // Thời gian timeout (3 giây)
+
+//     const fetchData = async () => {
+//       try {
+//         await loadRooms()
+//       } catch (error) {
+//         // Nếu có lỗi, kiểm tra số lần thử lại
+//         if (retryCount < MAX_RETRY) {
+//           // Nếu chưa đạt số lần thử lại tối đa, tăng biến đếm và thử lại sau TIMEOUT
+//           setRetryCount(retryCount + 1)
+//           setTimeout(fetchData, TIMEOUT)
+//         } else {
+//           // Nếu đã đạt số lần thử lại tối đa, đặt lỗi để thông báo cho người dùng
+//           setError(
+//             'Error in fetching data. Please check your internet connection!'
+//           )
+//         }
+//       }
+//     }
+
+//     fetchData()
+
   }, [])
 
   const toggleMenu = () => {
@@ -130,6 +149,26 @@ const Home = ({navigation}) => {
               weight="500"
               color={COLORS.secondary}
             />
+
+
+//               <Menu
+//                 visible={menuVisible}
+//                 onDismiss={toggleMenu}
+//                 anchor={
+//                   <TouchableOpacity onPress={toggleMenu}>
+//                     <AntDesign name="plus" size={20} color={COLORS.black} />
+//                   </TouchableOpacity>
+//                 }>
+//                 {userInfo?.role === 1 &&
+//                   <Menu.Item onPress={() => {
+//                     setShowModal(true)
+//                     toggleMenu()
+//                   }} 
+//                   title="Create Room" 
+//                   />
+//                 }
+//                 <Menu.Item onPress={toggleVideo} title="Join Meeting" />
+//               </Menu>
 
             <Menu
               visible={menuVisible}
