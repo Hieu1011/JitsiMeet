@@ -8,13 +8,24 @@ import {
 } from 'react-native'
 import React from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import {COLORS, images} from '../../../constants'
-import styles from './profile.style'
-import Title from '../../components/Title'
 import SelectDropdown from 'react-native-select-dropdown'
-import status from '../../../assets/data/statusData'
+import { useDispatch, useSelector } from 'react-redux'
+import { setStatus } from '../../../redux/slices/userSlice'
+import Title from '../../../components/Title'
+import {status} from '../../../../assets/data/statusData'
+import {COLORS, images} from '../../../../constants'
+import styles from './profile.style'
+
 
 const Profile = ({visible, setVisible}) => {
+  const dispatch = useDispatch()
+  const user = useSelector(state => state.user)
+  const userInfo = useSelector(state => state.user.info)
+
+  const handleSelectStatus = (item) => {
+    dispatch(setStatus(item))
+  }
+
   return (
     <Modal transparent={true} visible={visible} animationType="slide">
       <Pressable onPress={() => setVisible(false)} style={styles.pressable} />
@@ -39,7 +50,7 @@ const Profile = ({visible, setVisible}) => {
               resizeMode="cover"
               style={styles.image}
             />
-            <Text style={styles.title}>Bùi Lương Hiếu</Text>
+            <Text style={styles.title}>{userInfo.name}</Text>
             <Text style={[styles.value, {alignSelf: 'center'}]}>
               UIT - CNPM
             </Text>
@@ -48,7 +59,7 @@ const Profile = ({visible, setVisible}) => {
           <View style={styles.info}>
             <View style={styles.infoItem}>
               <Text style={styles.title}>Email: </Text>
-              <Text style={styles.value}>20520994@gm.uit.edu.vn</Text>
+              <Text style={styles.value}>{userInfo.email}</Text>
             </View>
 
             <View style={styles.infoItem}>
@@ -59,17 +70,18 @@ const Profile = ({visible, setVisible}) => {
             <View style={styles.infoItem}>
               <Text style={styles.title}>Status: </Text>
               <SelectDropdown
-                rowTextStyle={{textAlign: 'auto'}}
-                rowStyle={{height: 25}}
+                rowTextStyle={{fontSize: 16,textAlign: 'auto'}}
+                rowStyle={{height: 30}}
+                buttonTextStyle={{fontSize: 16}}
                 buttonStyle={{
                   height: 25,
                   width: 150,
                   borderWidth: 0.5,
-                  borderRadius: 7,
-                  backgroundColor: COLORS.secondary
+                  borderRadius: 5,
                 }}
                 data={status}
-                defaultButtonText="Select Status"
+                onSelect={(item) => handleSelectStatus(item)}
+                defaultButtonText={user.status ? user.status : "Select Status"}
               />
             </View>
           </View>

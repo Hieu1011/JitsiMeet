@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native'
-import {COLORS} from '../../../constants/theme'
+import {COLORS} from '../../../../constants/theme'
 
 const styles = StyleSheet.create({
   container: {
@@ -17,6 +17,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.black,
     textAlign: 'center',
+  },
+  content:{
+    paddingHorizontal: 15,
   },
   modal:{
     width: '100%',

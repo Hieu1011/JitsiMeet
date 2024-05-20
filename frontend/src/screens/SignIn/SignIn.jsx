@@ -12,12 +12,15 @@ import React, { useEffect, useState } from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import CheckBox from '@react-native-community/checkbox'
 import Button from '../../components/Button'
+import { useDispatch } from 'react-redux'
 import { login } from '../../api/authApi'
 import { jwtDecode } from 'jwt-decode'
+import {setInfo, setFeatures, setRoom} from '../../redux/slices/userSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { images, COLORS } from '../../../constants'
 
 const SignIn = ({ navigation }) => {
+  const dispatch = useDispatch()
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [isChecked, setIsChecked] = useState(false)
   const [email, setEmail] = useState('')
@@ -35,6 +38,9 @@ const SignIn = ({ navigation }) => {
         await AsyncStorage.setItem('token', loginResponse.data.token)
         await AsyncStorage.setItem('userInfo', JSON.stringify(decoded.context.user))
 
+        dispatch(setInfo(decoded.context.user))
+        dispatch(setFeatures(decoded.context.features))
+        dispatch(setRoom(decoded.room))
         navigation.replace('BottomNavigator')
       }
       catch (err) {
@@ -171,7 +177,7 @@ const SignIn = ({ navigation }) => {
             marginTop: 18,
             marginBottom: 4
           }}
-          onPress={() => handleLogin()}
+          onPress={handleLogin}
         />
 
         <View

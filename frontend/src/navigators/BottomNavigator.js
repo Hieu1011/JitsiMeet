@@ -4,13 +4,13 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import Home from '../screens/Home/Home'
-import Room from '../screens/Home/Room'
+import Room from '../screens/Home/Room/Room'
+import Member from '../screens/Home/Room/Member'
 import Channel from '../screens/Home/Channel'
 import Video from '../screens/Video/Video'
 import Meeting from '../screens/Video/Meeting'
 import Calendar from '../screens/Calendar/Calendar'
 import Settings from '../screens/Settings/Settings'
-import Profile from '../screens/Profile/Profile'
 import {COLORS} from '../../constants/theme'
 
 const Tab = createBottomTabNavigator()
@@ -24,9 +24,8 @@ const HomeStack = () => {
         headerShown: false
       }}>
       <Stack.Screen name="Home" component={Home} />
-      {/* <Stack.Screen name="List" component={List} /> */}
-      {/* <Stack.Screen name="ListItem" component={ListItem} /> */}
       <Stack.Screen name="Room" component={Room} />
+      <Stack.Screen name="Member" component={Member} />
       <Stack.Screen name="Channel" component={Channel} />
       <Stack.Screen name="Video" component={Video} />
       <Stack.Screen
