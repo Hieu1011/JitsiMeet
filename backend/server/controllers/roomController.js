@@ -194,10 +194,10 @@ const leaveRoom = async (req, res) => {
 
 const getRoomMembers = async (req, res) => {
     try {
-        const { roomId } = req.params;
+        const { roomId } = req.query;
 
         // Tìm phòng và populate thông tin của participants
-        const room = await Room.findById(roomId).populate('participants.userId', 'name email');  // Điều chỉnh các trường name và email theo schema User của bạn
+        const room = await Room.findById(roomId).populate('participants.userId', 'username email avatarUrl role phone');  // Điều chỉnh các trường name và email theo schema User của bạn
 
         if (!room) {
             return res.status(404).json({
@@ -220,5 +220,40 @@ const getRoomMembers = async (req, res) => {
     }
 };
 
+const deleteRoom = async (req, res) => {
+    try {
+        const { roomId } = req.body;
 
-module.exports = {createRoom, getAllRooms, joinRoom, approveUser, inviteToRoom, leaveRoom, getRoomMembers}
+        // Tìm và xóa phòng từ database
+        const deletedRoom = await Room.findByIdAndDelete(roomId);
+
+        if (!deletedRoom) {
+            return res.status(404).json({
+                success: false,
+                message: 'Room not found!'
+            });
+        }
+
+        // // Xóa các cuộc họp thuộc về phòng
+        // await Meeting.deleteMany({ _id: { $in: deletedRoom.meetings } });
+
+        res.status(200).json({
+            success: true,
+            message: 'Room deleted successfully!'
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: 'Cannot delete room!',
+            error: err.message
+        });
+    }
+};
+
+module.exports = {
+    deleteRoom
+};
+
+
+
+module.exports = {createRoom, getAllRooms, joinRoom, approveUser, inviteToRoom, leaveRoom, getRoomMembers, deleteRoom}

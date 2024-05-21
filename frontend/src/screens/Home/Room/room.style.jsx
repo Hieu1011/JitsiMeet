@@ -51,6 +51,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.3)',
     zIndex: 1,
   },
+
+  deleteRoomBackdrop: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' },
+
+  deleteRoomModal: { backgroundColor: 'white', padding: 20, borderRadius: 10 },
+
+  label: { fontSize: 18, marginBottom: 10, color: '#000' },
+
+  question: { marginBottom: 20 },
+
+  btnWrapper: { flexDirection: 'row', justifyContent: 'space-between' },
+
+  confirmBtn: { backgroundColor: 'red', padding: 10, borderRadius: 5 },
+
+  cancelBtn: { backgroundColor: 'grey', padding: 10, borderRadius: 5 },
+
+  btnText: { color: 'white' }
 })
 
 export default styles

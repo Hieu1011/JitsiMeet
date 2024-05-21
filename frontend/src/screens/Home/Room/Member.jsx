@@ -12,12 +12,16 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view'
 import {COLORS} from '../../../../constants'
 import styles from './room.style'
+import { getRoomMembers } from '../../../api/roomApi'
 
-const renderItem = ({item}) => (
-  <View style={styles.item}>
-    <Text style={styles.itemText}>{item.userId}</Text>
+const renderItem = ({item}) => {
+  // console.log('haha', item)
+  return (
+    <View style={styles.item}>
+    <Text style={styles.itemText}>{item.userId.username}</Text>
   </View>
-)
+  )
+}
 
 const Member = ({navigation, route}) => {
   const data = route.params
@@ -26,21 +30,27 @@ const Member = ({navigation, route}) => {
   const [routes] = useState([
     {key: 'owner', title: 'Chủ phòng'},
     {key: 'members', title: 'Thành viên'}
-  ])
+  ])  
 
   const [ownerData, setOwnerData] = useState([])
   const [membersData, setMembersData] = useState([])
 
   useEffect(() => {
-    const hostId = data.hostId
-    const owner = data.participants.filter(
-      participant => participant.userId === hostId
-    )
-    const members = data.participants.filter(
-      participant => participant.userId !== hostId
-    )
-    setOwnerData(owner)
-    setMembersData(members)
+    (
+      async () => {
+        const result = await getRoomMembers(data._id)
+
+        const hostId = data.hostId
+        const owner = result.participants.filter(
+          participant => participant.userId._id === hostId
+        )
+        const members = result.participants.filter(
+          participant => participant.userId._id !== hostId
+        )
+        setOwnerData(owner)
+        setMembersData(members)
+      }
+    ) ()
   }, [])
 
   const Owner = () => (
