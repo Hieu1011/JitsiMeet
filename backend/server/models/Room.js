@@ -9,7 +9,7 @@ const roomSchema = new mongoose.Schema(
         },
 
         title: {
-            type: String,
+            type: String,   
             required: true
         },
 

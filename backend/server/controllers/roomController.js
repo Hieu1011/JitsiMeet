@@ -54,10 +54,26 @@ const getAllRooms = async (req, res) => {
 }
 
 const joinRoom = async (req, res) => {
-    try {
+    try {   
         const {userId, roomId} = req.body
 
         const room = await Room.findById(roomId)
+
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                message: 'Room not found!'
+            });
+        }
+
+        room.pendingUsers.push(userId)
+
+        await room.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'User added to pendingUsers successfully!'
+        });
     }
     catch (err) {
         res.status(500).json({
@@ -66,6 +82,143 @@ const joinRoom = async (req, res) => {
             error: err.message
         }); 
     }
-} 
+}
 
-module.exports = {createRoom, getAllRooms}
+const approveUser = async (req, res) => {
+    try {
+        const {userId, roomId} = req.body
+
+        const room = await Room.findById(roomId)
+
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                message: 'Room not found!'
+            });
+        }
+
+        room.pendingUsers = room.pendingUsers.filter(pendingUserId => pendingUserId.toString() !== userId);
+        room.participants.push({
+            userId,
+            joinedAt: new Date()
+        });
+
+        await room.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'User approved successfully!'
+        });
+    }
+    catch (err) {
+        res.status(500).json({
+            success: false,
+            message: 'Cannot approve user!',
+            error: err.message
+        }); 
+    }
+}
+
+const inviteToRoom = async (req, res) => {
+    try {
+        const {userId, roomId} = req.body
+
+        const room = await Room.findById(roomId)
+
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                message: 'Room not found!'
+            });
+        }
+
+        room.participants.push({
+            userId,
+            joinedAt: new Date()
+        })
+
+        await room.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'User added to participants successfully!'
+        });
+    }
+    catch (err) {
+        res.status(500).json({
+            success: false,
+            message: 'Cannot invite to room!',
+            error: err.message
+        }); 
+    }
+}
+
+const leaveRoom = async (req, res) => {
+    try {
+        const { userId, roomId } = req.body;
+
+        const room = await Room.findById(roomId);
+
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                message: 'Room not found!'
+            });
+        }
+
+        const participantIndex = room.participants.findIndex(participant => participant.userId.toString() === userId);
+        if (participantIndex === -1) {
+            return res.status(400).json({
+                success: false,
+                message: 'User is not a participant of the room!'
+            });
+        }
+
+        room.participants.splice(participantIndex, 1);
+
+        await room.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'User has left the room successfully!'
+        });
+    } 
+    catch (err) {
+        res.status(500).json({
+            success: false,
+            message: 'Cannot leave room!',
+            error: err.message
+        });
+    }
+}
+
+const getRoomMembers = async (req, res) => {
+    try {
+        const { roomId } = req.params;
+
+        // Tìm phòng và populate thông tin của participants
+        const room = await Room.findById(roomId).populate('participants.userId', 'name email');  // Điều chỉnh các trường name và email theo schema User của bạn
+
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                message: 'Room not found!'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            participants: room.participants
+        });
+    } 
+    catch (err) {
+        res.status(500).json({
+            success: false,
+            message: 'Cannot get room members!',
+            error: err.message
+        });
+    }
+};
+
+
+module.exports = {createRoom, getAllRooms, joinRoom, approveUser, inviteToRoom, leaveRoom, getRoomMembers}

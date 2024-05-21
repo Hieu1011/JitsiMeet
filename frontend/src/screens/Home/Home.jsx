@@ -20,6 +20,11 @@ import CreateRoom from '../../components/CreateRoom'
 import {getAllRooms} from '../../api/roomApi'
 import {COLORS, images} from '../../../constants'
 import styles from './home.style'
+import { room } from '../../../assets/data/roomData'
+import CreateRoom from '../../components/CreateRoom'
+import { getAllRooms } from '../../api/roomApi'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 
 const Home = ({navigation}) => {
   const dispatch = useDispatch()
@@ -33,7 +38,16 @@ const Home = ({navigation}) => {
   const [data, setData] = useState([])
   const [error, setError] = useState(null)
   const [fullData, setFullData] = useState([])
+
+  const [showModal, setShowModal] = useState(false)
+  const [userInfo, setUserInfo] = useState(null)
+
+  const getUserInfo = async () => {
+    setUserInfo(JSON.parse(await AsyncStorage.getItem('userInfo')))
+  }
+
   const [retryCount, setRetryCount] = useState(0)
+
 
   const loadRooms = async () => {
     setIsLoading(true)
@@ -60,7 +74,7 @@ const Home = ({navigation}) => {
     const fetchData = async () => {
       try {
         await loadRooms()
-      } catch (err) {
+      } catch (error) {
         // Nếu có lỗi, kiểm tra số lần thử lại
         if (retryCount < MAX_RETRY) {
           // Nếu chưa đạt số lần thử lại tối đa, tăng biến đếm và thử lại sau TIMEOUT
@@ -76,6 +90,7 @@ const Home = ({navigation}) => {
     }
 
     fetchData()
+    getUserInfo()
   }, [retryCount])
 
   const toggleMenu = () => {
@@ -134,7 +149,7 @@ const Home = ({navigation}) => {
               weight="500"
               color={COLORS.secondary}
             />
-
+            
             <Menu
               visible={menuVisible}
               onDismiss={toggleMenu}

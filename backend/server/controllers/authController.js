@@ -77,7 +77,7 @@ const login = async (req, res) => {
                 avatar: avatarUrl,
                 email: email,
                 moderator: role === 3 ? 'false' : 'true',
-                role: role
+                role: role,
               },
               features: {
                 livestreaming: 'true',
