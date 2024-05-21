@@ -100,7 +100,7 @@ const Room = ({route, navigation}) => {
           <Text style={{fontSize: 14, color: COLORS.black}}>{data.desc}</Text>
         </View>
 
-        <View style={{marginTop: 10}}>
+        {/* <View style={{marginTop: 10}}>
           {channel
             .filter(item => item.roomId === data._id)
             .map(item => (
@@ -116,7 +116,7 @@ const Room = ({route, navigation}) => {
                 </Text>
               </TouchableOpacity>
             ))}
-        </View>
+        </View> */}
       </View>
 
       <FAB style={{position: 'absolute', bottom: 10, right: 10}} icon='video-outline' size='medium' onPress={() => navigation.navigate('Meeting', {room})}/>

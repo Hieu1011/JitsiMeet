@@ -25,8 +25,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFocusEffect } from '@react-navigation/native'
 
 const Home = ({navigation}) => {
-  const dispatch = useDispatch();
-  
+  const dispatch = useDispatch()
+  const userInfo = useSelector(state => state.user.info)
+
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [menuVisible, setMenuVisible] = useState(false)
@@ -53,9 +54,13 @@ const Home = ({navigation}) => {
       setFullData(result.reverse())
       setIsLoading(false)
       setRetryCount(0)
-    } catch (error) {
+    } catch (err) {
       setIsLoading(false)
-      setError(error)
+      console.log(err)
+      setError(
+        err.message ||
+          'Error in fetching data. Please check your internet connection!'
+      )
     }
   }
 
@@ -227,7 +232,7 @@ const Home = ({navigation}) => {
 
         <Modal
           visible={videoVisible}
-          onDismiss={setVideoVisible}
+          onDismiss={() => setVideoVisible(false)}
           contentContainerStyle={styles.modal}>
           <Video navigation={navigation} />
         </Modal>
