@@ -15,7 +15,7 @@ import styles from './room.style'
 
 const renderItem = ({item}) => (
   <View style={styles.item}>
-    <Text style={styles.itemText}>{item.userId.$oid}</Text>
+    <Text style={styles.itemText}>{item.userId}</Text>
   </View>
 )
 

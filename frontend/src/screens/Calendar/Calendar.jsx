@@ -96,7 +96,6 @@ const Calendar = () => {
     format24h: true,
     onBackgroundLongPress: onOpenModal,
     onEventPress: onEventPress,
-    onEventLongPress: 
     // scrollToFirst: true,
     // start: 0,
     // end: 24,

@@ -27,9 +27,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 const Home = ({navigation}) => {
-  const dispatch = useDispatch();
-  const userInfo = useSelector(state=> state.user.info)
-  
+  const dispatch = useDispatch()
+  const userInfo = useSelector(state => state.user.info)
+
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [menuVisible, setMenuVisible] = useState(false)
@@ -57,41 +57,41 @@ const Home = ({navigation}) => {
       setFullData(result.reverse())
       setIsLoading(false)
       setRetryCount(0)
-    } catch (error) {
+    } catch (err) {
       setIsLoading(false)
-      setError(error)
+      console.log(err)
+      setError(
+        err.message ||
+          'Error in fetching data. Please check your internet connection!'
+      )
     }
   }
 
   useEffect(() => {
+    const MAX_RETRY = 3 // Số lần thử lại tối đa
+    const TIMEOUT = 3000 // Thời gian timeout (3 giây)
 
+    const fetchData = async () => {
+      try {
+        await loadRooms()
+      } catch (error) {
+        // Nếu có lỗi, kiểm tra số lần thử lại
+        if (retryCount < MAX_RETRY) {
+          // Nếu chưa đạt số lần thử lại tối đa, tăng biến đếm và thử lại sau TIMEOUT
+          setRetryCount(retryCount + 1)
+          setTimeout(fetchData, TIMEOUT)
+        } else {
+          // Nếu đã đạt số lần thử lại tối đa, đặt lỗi để thông báo cho người dùng
+          setError(
+            'Error in fetching data. Please check your internet connection!'
+          )
+        }
+      }
+    }
+
+    fetchData()
     getUserInfo()
-    loadRooms()
-
-//     const MAX_RETRY = 3 // Số lần thử lại tối đa
-//     const TIMEOUT = 3000 // Thời gian timeout (3 giây)
-
-//     const fetchData = async () => {
-//       try {
-//         await loadRooms()
-//       } catch (error) {
-//         // Nếu có lỗi, kiểm tra số lần thử lại
-//         if (retryCount < MAX_RETRY) {
-//           // Nếu chưa đạt số lần thử lại tối đa, tăng biến đếm và thử lại sau TIMEOUT
-//           setRetryCount(retryCount + 1)
-//           setTimeout(fetchData, TIMEOUT)
-//         } else {
-//           // Nếu đã đạt số lần thử lại tối đa, đặt lỗi để thông báo cho người dùng
-//           setError(
-//             'Error in fetching data. Please check your internet connection!'
-//           )
-//         }
-//       }
-//     }
-
-//     fetchData()
-
-  }, [])
+  }, [retryCount])
 
   const toggleMenu = () => {
     setMenuVisible(prevVisible => !prevVisible)
@@ -149,27 +149,7 @@ const Home = ({navigation}) => {
               weight="500"
               color={COLORS.secondary}
             />
-
-
-//               <Menu
-//                 visible={menuVisible}
-//                 onDismiss={toggleMenu}
-//                 anchor={
-//                   <TouchableOpacity onPress={toggleMenu}>
-//                     <AntDesign name="plus" size={20} color={COLORS.black} />
-//                   </TouchableOpacity>
-//                 }>
-//                 {userInfo?.role === 1 &&
-//                   <Menu.Item onPress={() => {
-//                     setShowModal(true)
-//                     toggleMenu()
-//                   }} 
-//                   title="Create Room" 
-//                   />
-//                 }
-//                 <Menu.Item onPress={toggleVideo} title="Join Meeting" />
-//               </Menu>
-
+            
             <Menu
               visible={menuVisible}
               onDismiss={toggleMenu}
@@ -231,7 +211,7 @@ const Home = ({navigation}) => {
 
         <Modal
           visible={videoVisible}
-          onDismiss={setVideoVisible}
+          onDismiss={() => setVideoVisible(false)}
           contentContainerStyle={styles.modal}>
           <Video navigation={navigation} />
         </Modal>
