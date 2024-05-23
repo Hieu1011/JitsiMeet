@@ -6,51 +6,39 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white
   },
-  header:{
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
-    
+    padding: 10
   },
-  textTitle:{
+  textTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: COLORS.black,
-    textAlign: 'center',
+    textAlign: 'center'
   },
-  content:{
-    paddingHorizontal: 15,
+  content: {
+    paddingHorizontal: 15
   },
-  modal:{
-    width: '100%',
-    backgroundColor: COLORS.white,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    position: 'absolute',
-    bottom: 0,
-    zIndex: 999
-  },
-  modalHeader:{
-    paddingVertical: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent:{
-    marginBottom: 10,
-  },
-  modalItem:{
+  item: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    gap: 25
+    flex: 1,
+    gap: 20,
+    paddingVertical: 5,
+    borderBottomWidth: 0.6,
+    // backgroundColor: 'red'
   },
-  pressable: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    zIndex: 1,
+  itemAvt: {
+    height: 65,
+    width: 65,
+    borderRadius: 50,
   },
+  itemText:{
+    fontSize: 16,
+    fontWeight: "400",
+    color: COLORS.black
+  }
 })
 
 export default styles

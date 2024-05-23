@@ -5,19 +5,22 @@ import {
   TouchableOpacity,
   Modal,
   Pressable,
-  ToastAndroid
+  ToastAndroid,
+  FlatList,
+  Image
 } from 'react-native'
-import React, {useState} from 'react'
-import { FAB } from 'react-native-paper'
+import React, {useEffect, useState} from 'react'
+import {FAB, TextInput} from 'react-native-paper'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import Octicons from 'react-native-vector-icons/Octicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import styles from './room.style'
 import {COLORS} from '../../../../constants'
 import Title from '../../../components/Title'
 import {channel} from '../../../../assets/data/channelData'
 import {useSelector} from 'react-redux'
-import { deleteRoom, leaveRoom } from '../../../api/roomApi'
+import {approveUser, deleteRoom, getRoomRequests, leaveRoom} from '../../../api/roomApi'
 
 const normalizeString = str => {
   // Xóa dấu tiếng Việt
@@ -41,37 +44,76 @@ const normalizeString = str => {
 
 const Room = ({route, navigation}) => {
   const data = route.params
-  
+
   const user = useSelector(state => state.user.info)
+  const [requests, setRequests] = useState([])
   const [visible, setVisible] = useState(false)
   const [deleteConfirmModal, setDeleteConfirmModal] = useState(false)
   const [leaveConfirmModal, setLeaveConfirmModal] = useState(false)
+  const [inviteModalVisible, setInviteModalVisible] = useState(false)
+  const [requestModalVisible, setRequestModalVisible] = useState(false)
   const room = `vpaas-magic-cookie-aa87917959cf4f0f95d3b5eac48edb1e/${normalizeString(data.title)}`
 
   // console.log('Room: ', data)
   // console.log('User: ', user)
 
+  useEffect(() => {
+    fetchRequests()
+  }, [])
+
+  const fetchRequests = async () => {
+    try {
+      const response = await getRoomRequests(data._id)
+      setRequests(response.requests)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleInviteMember = async () => {
+
+  }
+
+  const handleApproveMember = async userId => {
+    try {
+      await approveUser(userId, data._id)
+      ToastAndroid.show('Đã duyệt yêu cầu!', ToastAndroid.BOTTOM)
+      fetchRequests() // Refresh the request list
+    } catch (error) {
+      ToastAndroid.show('Đã xảy ra lỗi! Vui lòng thử lại', ToastAndroid.BOTTOM)
+      console.log(error)
+    }
+  }
+
+  const handleRejectMember = async userId => {
+    try {
+      await rejectRequest(userId, data._id, )
+      ToastAndroid.show('Đã từ chối yêu cầu!', ToastAndroid.BOTTOM)
+      fetchRequests() // Refresh the request list
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const handleDeleteRoom = async () => {
     await deleteRoom(data._id)
-    // console.log(data._id)
-
     ToastAndroid.show('Xóa phòng thành công!', ToastAndroid.BOTTOM)
     navigation.goBack()
   }
+
   const handleLeaveRoom = async () => {
     if (data.participants.length === 1) {
       await leaveRoom(user.id, data._id)
-      
+
       await deleteRoom(data._id)
-    }
-    else {
+    } else {
       await leaveRoom(user.id, data._id)
     }
 
     ToastAndroid.show('Đã rời khỏi phòng!', ToastAndroid.BOTTOM)
     navigation.goBack()
   }
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -96,7 +138,7 @@ const Room = ({route, navigation}) => {
       </View>
 
       <View style={styles.content}>
-        <View style={{paddingLeft: 20,}}>
+        <View style={{paddingLeft: 20}}>
           <Text style={{fontSize: 14, color: COLORS.black}}>{data.desc}</Text>
         </View>
 
@@ -119,7 +161,12 @@ const Room = ({route, navigation}) => {
         </View> */}
       </View>
 
-      <FAB style={{position: 'absolute', bottom: 10, right: 10}} icon='video-outline' size='medium' onPress={() => navigation.navigate('Meeting', {room})}/>
+      <FAB
+        style={{position: 'absolute', bottom: 10, right: 10}}
+        icon="video-outline"
+        size="medium"
+        onPress={() => navigation.navigate('Meeting', {room})}
+      />
       <Modal transparent={true} visible={visible} animationType="slide">
         <Pressable onPress={() => setVisible(false)} style={styles.pressable} />
         <View style={styles.modal}>
@@ -128,7 +175,9 @@ const Room = ({route, navigation}) => {
           </View>
 
           <View style={styles.modalContent}>
-            <TouchableOpacity style={styles.modalItem} onPress={() => navigation.navigate('Member', data)}>
+            <TouchableOpacity
+              style={styles.modalItem}
+              onPress={() => navigation.navigate('Member', data)}>
               <Ionicons name="people-outline" size={24} color={COLORS.black} />
               <Text style={{fontSize: 16, color: COLORS.black}}>
                 Xem thành viên
@@ -136,25 +185,55 @@ const Room = ({route, navigation}) => {
             </TouchableOpacity>
 
             {user.moderator && (
-              <TouchableOpacity style={styles.modalItem} onPress={() => {
-                setDeleteConfirmModal(true)
-                setVisible(false)
-              }}>
-                <MaterialCommunityIcons
-                  name="delete-outline"
-                  size={24}
-                  color={COLORS.black}
-                />
-                <Text style={{fontSize: 16, color: COLORS.black}}>
-                  Xoá phòng
-                </Text>
-              </TouchableOpacity>
+              <View>
+                <TouchableOpacity
+                  style={styles.modalItem}
+                  onPress={() => {
+                    setInviteModalVisible(true)
+                    setVisible(false)
+                  }}>
+                  <MaterialCommunityIcons name="account-plus-outline" size={24} color={COLORS.black} />
+                  <Text style={{fontSize: 16, color: COLORS.black}}>
+                    Mời thành viên
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.modalItem}
+                  onPress={() => {
+                    setRequestModalVisible(true)
+                    setVisible(false)
+                  }}>
+                  <Octicons name="checklist" size={24} color={COLORS.black} />
+                  <Text style={{fontSize: 16, color: COLORS.black}}>
+                    Duyệt yêu cầu
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.modalItem}
+                  onPress={() => {
+                    setDeleteConfirmModal(true)
+                    setVisible(false)
+                  }}>
+                  <MaterialCommunityIcons
+                    name="delete-outline"
+                    size={24}
+                    color={COLORS.black}
+                  />
+                  <Text style={{fontSize: 16, color: COLORS.black}}>
+                    Xoá phòng
+                  </Text>
+                </TouchableOpacity>
+              </View>
             )}
 
-            <TouchableOpacity style={styles.modalItem} onPress={() => {
-              setLeaveConfirmModal(true)
-              setVisible(false)
-            }}>
+            <TouchableOpacity
+              style={styles.modalItem}
+              onPress={() => {
+                setLeaveConfirmModal(true)
+                setVisible(false)
+              }}>
               <MaterialCommunityIcons
                 name="account-arrow-left-outline"
                 size={24}
@@ -169,47 +248,136 @@ const Room = ({route, navigation}) => {
       </Modal>
 
       <Modal
-      animationType="slide"
-      transparent={true}
-      visible={deleteConfirmModal}
-      onRequestClose={() => setDeleteConfirmModal(false)}
-    >
-      <View style={styles.deleteRoomBackdrop}>
-        <View style={styles.deleteRoomModal}>
-          <Text style={styles.label}>Xác nhận xóa phòng</Text>
-          <Text style={styles.question}>Bạn có chắc chắn muốn xóa phòng này?</Text>
-          <View style={styles.btnWrapper}>
-            <TouchableOpacity onPress={() => setDeleteConfirmModal(false)} style={styles.cancelBtn}>
-              <Text style={styles.btnText}>Hủy</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleDeleteRoom} style={styles.confirmBtn}>
-              <Text style={styles.btnText}>Xóa</Text>
-            </TouchableOpacity>
+        animationType="slide"
+        transparent={true}
+        visible={requestModalVisible}>
+        <Pressable
+          onPress={() => setRequestModalVisible(false)}
+          style={styles.pressable}
+        />
+        <View style={styles.requestBackdrop}>
+          <View style={styles.requestModal}>
+            <Text style={styles.label}>Danh sách yêu cầu</Text>
+            {requests.length > 0 ? (
+              <FlatList
+                data={requests}
+                keyExtractor={item => item._id}
+                renderItem={({item}) => (
+                  <View style={styles.requestItem}>
+                    <View style={styles.requestInfo}>
+                      <Image
+                        style={styles.itemAvt}
+                        source={{uri: item.avatarUrl}}
+                      />
+                      <View style={{flex: 1}}>
+                        <Text style={styles.requestText}>
+                          Tên: {item.username}
+                        </Text>
+                        <Text style={styles.requestText}>
+                          Email: {item.email}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.requestActions}>
+                      <TouchableOpacity
+                        style={styles.approveBtn}
+                        onPress={() => handleApproveMember(item._id)}>
+                        <Text style={styles.btnText}>Duyệt</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.rejectBtn}
+                        onPress={() => handleRejectMember(item._id)}>
+                        <Text style={styles.btnText}>Từ chối</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              />
+            ) : (
+              <Text style={styles.question}>Hiện tại không có yêu cầu tham gia nào</Text>
+            )}
           </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+
       <Modal
-      animationType="slide"
-      transparent={true}
-      visible={leaveConfirmModal}
-      onRequestClose={() => setLeaveConfirmModal(false)}
-    >
-      <View style={styles.deleteRoomBackdrop}>
-        <View style={styles.deleteRoomModal}>
-          <Text style={styles.label}>Xác nhận rời phòng</Text>
-          <Text style={styles.question}>Bạn có chắc chắn muốn rời phòng?</Text>
-          <View style={styles.btnWrapper}>
-            <TouchableOpacity onPress={() => setLeaveConfirmModal(false)} style={styles.cancelBtn}>
-              <Text style={styles.btnText}>Hủy</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleLeaveRoom} style={styles.confirmBtn}>
-              <Text style={styles.btnText}>Rời khỏi</Text>
-            </TouchableOpacity>
+        animationType="slide"
+        transparent={true}
+        visible={inviteModalVisible}
+        onRequestClose={() => setInviteModalVisible(false)}>
+        <View style={styles.deleteRoomBackdrop}>
+          <View style={styles.deleteRoomModal}>
+            <Text style={styles.label}>Nhập email thành viên</Text>
+            <TextInput style={{height: 45, width: 250, marginBottom: 20}} />
+            <View style={styles.btnWrapper}>
+              <TouchableOpacity
+                onPress={() => setInviteModalVisible(false)}
+                style={styles.cancelBtn}>
+                <Text style={styles.btnText}>Hủy</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleInviteMember}
+                style={styles.approveBtn} >
+                <Text style={styles.btnText}>Mời</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={deleteConfirmModal}
+        onRequestClose={() => setDeleteConfirmModal(false)}>
+        <View style={styles.deleteRoomBackdrop}>
+          <View style={styles.deleteRoomModal}>
+            <Text style={styles.label}>Xác nhận xóa phòng</Text>
+            <Text style={styles.question}>
+              Bạn có chắc chắn muốn xóa phòng này?
+            </Text>
+            <View style={styles.btnWrapper}>
+              <TouchableOpacity
+                onPress={() => setDeleteConfirmModal(false)}
+                style={styles.cancelBtn}>
+                <Text style={styles.btnText}>Hủy</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleDeleteRoom}
+                style={styles.confirmBtn}>
+                <Text style={styles.btnText}>Xóa</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={leaveConfirmModal}
+        onRequestClose={() => setLeaveConfirmModal(false)}>
+        <View style={styles.deleteRoomBackdrop}>
+          <View style={styles.deleteRoomModal}>
+            <Text style={styles.label}>Xác nhận rời phòng</Text>
+            <Text style={styles.question}>
+              Bạn có chắc chắn muốn rời phòng?
+            </Text>
+            <View style={styles.btnWrapper}>
+              <TouchableOpacity
+                onPress={() => setLeaveConfirmModal(false)}
+                style={styles.cancelBtn}>
+                <Text style={styles.btnText}>Hủy</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleLeaveRoom}
+                style={styles.confirmBtn}>
+                <Text style={styles.btnText}>Rời khỏi</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   )
 }

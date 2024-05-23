@@ -6,18 +6,18 @@ import {
   View,
   Dimensions,
   FlatList,
-  StyleSheet
+  Image
 } from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view'
+import { getRoomMembers, getRoomRequests } from '../../../api/roomApi'
 import {COLORS} from '../../../../constants'
-import styles from './room.style'
-import { getRoomMembers } from '../../../api/roomApi'
+import styles from './member.style'
 
 const renderItem = ({item}) => {
-  // console.log('haha', item)
   return (
     <View style={styles.item}>
+      <Image style={styles.itemAvt} source={{uri: item.userId.avatarUrl}}/>
     <Text style={styles.itemText}>{item.userId.username}</Text>
   </View>
   )

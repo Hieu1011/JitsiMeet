@@ -8,6 +8,7 @@ const {
   inviteToRoom,
   leaveRoom,
   getRoomMembers,
+  getRoomRequests,
   deleteRoom
 } = require("../controllers/roomController");
 
@@ -20,6 +21,7 @@ router.post("/approveUser", approveUser);
 router.post("/inviteToRoom", inviteToRoom);
 router.post("/leaveRoom", leaveRoom);
 router.get("/getRoomMembers", getRoomMembers);
+router.get("/getRoomRequests", getRoomRequests);
 router.post("/deleteRoom", deleteRoom);
 
 module.exports = router;

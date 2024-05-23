@@ -6,7 +6,8 @@ import {
   View,
   Text,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  ToastAndroid
 } from 'react-native'
 import {Avatar, Menu, Modal, PaperProvider} from 'react-native-paper'
 import AntDesign from 'react-native-vector-icons/AntDesign'
@@ -17,11 +18,10 @@ import SearchBar from '../../components/SearchBar'
 import List from '../../components/List'
 import Title from '../../components/Title'
 import CreateRoom from '../../components/CreateRoom'
-import {getAllRooms} from '../../api/roomApi'
+import JoinRoom from '../../components/JoinRoom'
+import {getAllRooms, joinRoom} from '../../api/roomApi'
 import {COLORS, images} from '../../../constants'
 import styles from './home.style'
-import { room } from '../../../assets/data/roomData'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFocusEffect } from '@react-navigation/native'
 
 const Home = ({navigation}) => {
@@ -33,29 +33,31 @@ const Home = ({navigation}) => {
   const [menuVisible, setMenuVisible] = useState(false)
   const [roomVisible, setRoomVisible] = useState(false)
   const [videoVisible, setVideoVisible] = useState(false)
-  const [data, setData] = useState([])
+  const [joinVisible, setJoinVisible] = useState(false)
+  const [selectedRoom, setSelectedRoom] = useState(null)
+  const [data, setData] = useState([]) //Room data hiển thị (đã join)
+  const [fullData, setFullData] = useState([]) //Tất cả r
   const [error, setError] = useState(null)
-  const [fullData, setFullData] = useState([])
-
-  const [userInfo, setUserInfo] = useState(null)
-
-  const getUserInfo = async () => {
-    setUserInfo(JSON.parse(await AsyncStorage.getItem('userInfo')))
-  }
-
   const [retryCount, setRetryCount] = useState(0)
-
 
   const loadRooms = async () => {
     setIsLoading(true)
     try {
       const result = await getAllRooms()
-      setData(result)
+      const filteredRooms = result.filter(room =>
+        room.participants.some(
+          participant => participant.userId === userInfo.id
+        )
+      )
+      console.log(userInfo.userId);
+      
+
+      setData(filteredRooms)
       setFullData(result.reverse())
       setIsLoading(false)
       setRetryCount(0)
     } catch (err) {
-      setIsLoading(false)
+      setIsLoading(true)
       console.log(err)
       setError(
         err.message ||
@@ -64,11 +66,7 @@ const Home = ({navigation}) => {
     }
   }
 
-  useFocusEffect(
-    useCallback(() => {
-      getUserInfo()
-    // loadRooms()
-
+  useEffect(() => {
     const MAX_RETRY = 3 // Số lần thử lại tối đa
     const TIMEOUT = 3000 // Thời gian timeout (3 giây)
 
@@ -91,6 +89,10 @@ const Home = ({navigation}) => {
     }
 
     fetchData()
+  }, [retryCount])
+  useFocusEffect(
+    useCallback(() => {
+      loadRooms()
     }, [])
   )
 
@@ -99,11 +101,21 @@ const Home = ({navigation}) => {
   }
 
   const handleSearch = query => {
+    setSearchQuery(query)
     const formattedQuery = query.toLowerCase()
-    const filteredData = filter(fullData, room => {
-      return contains(room, formattedQuery)
-    })
-    setData(filteredData)
+    if (formattedQuery === '') {
+      const joinedRooms = fullData.filter(room =>
+        room.participants.some(
+          participant => participant.userId === userInfo.id
+        )
+      )
+      setData(joinedRooms)
+    } else {
+      const filteredData = filter(fullData, room => {
+        return contains(room, formattedQuery)
+      })
+      setData(filteredData)
+    }
   }
 
   const contains = ({title}, query) => {
@@ -113,6 +125,59 @@ const Home = ({navigation}) => {
     return false
   }
 
+  const handleRoomClick = room => {
+    const hasJoined = room.participants.some(
+      participant => participant.userId === userInfo.id
+    )
+    console.log(hasJoined)
+
+    if (hasJoined) {
+      navigation.navigate('Room', room)
+    } else {
+      setSelectedRoom(room)
+      setJoinVisible(true)
+    }
+  }
+
+  const handleJoinRoom = async () => {
+    const hasRequested =
+      Array.isArray(selectedRoom.pendingUsers) &&
+      selectedRoom.pendingUsers.includes(userInfo.id)
+
+    console.log(selectedRoom, hasRequested)
+
+    try {
+      if (!hasRequested) {
+        const res = await joinRoom(userInfo.id, selectedRoom._id)
+        console.log(res)
+
+        await loadRooms() // Load lại danh sách phòng sau khi gửi yêu cầu
+        setSelectedRoom(prevRoom => ({
+          ...prevRoom,
+          pendingUsers: [...prevRoom.pendingUsers, userInfo.id]
+        }))
+        ToastAndroid.show(
+          'Yêu cầu tham gia phòng đã được gửi!',
+          ToastAndroid.BOTTOM
+        )
+      } else {
+        ToastAndroid.show(
+          'Bạn đã yêu cầu tham gia phòng này rồi!',
+          ToastAndroid.BOTTOM
+        )
+      }
+    } catch (err) {
+      console.log(err)
+      ToastAndroid.show(
+        'Không thể tham gia phòng này hoặc phòng không tồn tại!',
+        ToastAndroid.BOTTOM
+      )
+    }
+
+    setJoinVisible(false)
+    // navigation.navigate('RoomDetail', { room: selectedRoom });
+  }
+
   if (error) {
     return (
       <View
@@ -120,7 +185,8 @@ const Home = ({navigation}) => {
           flex: 1,
           paddingHorizontal: 10,
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
+          backgroundColor: COLORS.white
         }}>
         <Text>{error}</Text>
       </View>
@@ -151,26 +217,6 @@ const Home = ({navigation}) => {
               color={COLORS.secondary}
             />
 
-
-               {/* <Menu
-                visible={menuVisible}
-                onDismiss={toggleMenu}
-                anchor={
-                  <TouchableOpacity onPress={toggleMenu}>
-                    <AntDesign name="plus" size={20} color={COLORS.black} />
-                  </TouchableOpacity>
-                }>
-                {userInfo?.role === 1 &&
-                  <Menu.Item onPress={() => {
-                    setShowModal(true)
-                    toggleMenu()
-                  }} 
-                  title="Create Room" 
-                  />
-                }
-                <Menu.Item onPress={toggleVideo} title="Join Meeting" />
-              </Menu> */}
-
             <Menu
               visible={menuVisible}
               onDismiss={toggleMenu}
@@ -183,10 +229,10 @@ const Home = ({navigation}) => {
                 onPress={() => {
                   if (userInfo.role !== 3) {
                     setRoomVisible(true)
+                    toggleMenu()
                   } else {
                     Alert.alert('Thông báo', 'Bạn không có quyền tạo phòng')
                   }
-                  toggleMenu()
                 }}
                 title="Create Room"
               />
@@ -213,7 +259,20 @@ const Home = ({navigation}) => {
         </View>
 
         {!isLoading ? (
-          <List data={data} navigation={navigation} />
+          data.length > 0 ? (
+            <List
+              data={data}
+              navigation={navigation}
+              onPressItem={handleRoomClick}
+            />
+          ) : (
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{fontSize: 14, color: COLORS.black}}>
+                Bạn chưa tham gia phòng nào.
+              </Text>
+            </View>
+          )
         ) : (
           <View
             style={{
@@ -230,6 +289,11 @@ const Home = ({navigation}) => {
           </View>
         )}
 
+        <JoinRoom
+          isShow={joinVisible}
+          setIsShow={setJoinVisible}
+          handleJoinRoom={handleJoinRoom}
+        />
         <Modal
           visible={videoVisible}
           onDismiss={() => setVideoVisible(false)}

@@ -2,9 +2,9 @@ import {StyleSheet} from 'react-native'
 import React from 'react'
 import {Card, Text, Badge} from 'react-native-paper'
 
-const ListItem = ({data, navigation}) => {
+const ListItem = ({data, navigation, onPressItem}) => {
   return (
-    <Card style={styles.card} onPress={() => navigation.navigate('Room', data)}>
+    <Card style={styles.card} onPress={() => onPressItem(data)}>
       <Card.Cover source={{uri: data.avatar}} style={styles.img} />
       <Card.Title
         title={data.title}

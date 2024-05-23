@@ -2,12 +2,12 @@ import {FlatList, StyleSheet, Text, View} from 'react-native'
 import React from 'react'
 import ListItem from './ListItem'
 
-const List = ({data, navigation}) => {
+const List = ({data, navigation, onPressItem}) => {
   return (
     <FlatList
       data={data}
       style={styles.flatList}
-      renderItem={({item}) => <ListItem data={item} navigation={navigation} />}
+      renderItem={({item}) => <ListItem data={item} navigation={navigation} onPressItem={onPressItem} />}
       keyExtractor={item => item._id}
       numColumns={2}
     />

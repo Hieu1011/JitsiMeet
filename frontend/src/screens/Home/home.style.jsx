@@ -15,8 +15,8 @@ const styles = StyleSheet.create({
     flex: 0.4,
     backgroundColor: 'white',
     margin: 15,
-    borderRadius: 15,
-  }
+    borderRadius: 15
+  },
 })
 
 export default styles

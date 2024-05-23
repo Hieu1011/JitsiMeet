@@ -29,12 +29,10 @@ export const getAllRooms = async () => {
 
 export const joinRoom = async (userId, roomId) => {
     try {
-        await mongoAPI.get('/joinRoom', {
+        await mongoAPI.post('/joinRoom', {
             userId,
             roomId
         })
-
-        return response.data
     }
     catch (err) {
         console.log(err.response)
@@ -44,7 +42,7 @@ export const joinRoom = async (userId, roomId) => {
 
 export const approveUser = async (userId, roomId) => {
     try {
-        await mongoAPI.get('/approveUser', {
+        await mongoAPI.post('/approveUser', {
             userId,
             roomId
         })
@@ -58,7 +56,7 @@ export const approveUser = async (userId, roomId) => {
 
 export const inviteToRoom = async (userId, roomId) => {
     try {
-        await mongoAPI.get('/inviteToRoom', {
+        await mongoAPI.post('/inviteToRoom', {
             userId,
             roomId
         })
@@ -99,6 +97,23 @@ export const getRoomMembers = async (roomId) => {
         throw err
     }
 }
+
+export const getRoomRequests = async (roomId) => {
+    try {
+        const response = await mongoAPI.get('/getRoomRequests', {
+            params: {
+                roomId
+            }
+        })
+
+        return response.data
+    }
+    catch (err) {
+        console.log(err.response.data)
+        throw err
+    }
+}
+
 export const deleteRoom = async (roomId) => {
     try {
         await mongoAPI.post('/deleteRoom', {

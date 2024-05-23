@@ -9,14 +9,15 @@ import {
   StyleSheet,
   ToastAndroid
 } from 'react-native'
+import { useSelector } from 'react-redux'
 import TextAreaComponent from './TextAreaComponent'
 import TextInputComponent from './TextInputComponent'
 import {COLORS} from '../../constants'
 import {createRoom} from '../api/roomApi'
 
 const {width, height} = Dimensions.get('window')
-
 const CreateRoom = ({isShow, setIsShow, loadRooms}) => {
+  const userInfo = useSelector(state => state.user.info)
   const [roomName, setRoomName] = useState('')
   const [desc, setDesc] = useState('')
 
@@ -24,7 +25,7 @@ const CreateRoom = ({isShow, setIsShow, loadRooms}) => {
     try {
       await createRoom(
         roomName,
-        '663af7ba175655eef6c7abf4',
+        userInfo.id,
         'https://firebasestorage.googleapis.com/v0/b/jitsimeet-1234.appspot.com/o/3530322.jpg?alt=media&token=80a7ebd5-0a65-4851-ac8b-e86bb9d8ab80',
         desc
       )

@@ -41,7 +41,7 @@ const SignUp = ({navigation}) => {
 
       try {
         await AsyncStorage.setItem('token', loginResponse.data.token)
-        await AsyncStorage.setItem('userInfo', JSON.stringify(decoded))
+        // await AsyncStorage.setItem('userInfo', JSON.stringify(decoded))
 
         dispatch(setInfo(decoded.context.user))
         dispatch(setFeatures(decoded.context.features))
