@@ -5,6 +5,7 @@ const {
   getAllRooms,
   joinRoom,
   approveUser,
+  rejectUser,
   inviteToRoom,
   leaveRoom,
   getRoomMembers,
@@ -18,6 +19,7 @@ router.post("/createRoom", createRoom);
 router.get("/getAllRooms", getAllRooms);
 router.post("/joinRoom", joinRoom);
 router.post("/approveUser", approveUser);
+router.post("/rejectUser", rejectUser);
 router.post("/inviteToRoom", inviteToRoom);
 router.post("/leaveRoom", leaveRoom);
 router.get("/getRoomMembers", getRoomMembers);

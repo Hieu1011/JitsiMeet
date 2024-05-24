@@ -54,6 +54,20 @@ export const approveUser = async (userId, roomId) => {
     }
 }
 
+export const rejectUser = async (userId, roomId) => {
+    try {
+        await mongoAPI.post('/rejectUser', {
+            userId,
+            roomId
+        })
+
+    }
+    catch (err) {
+        console.log(err.response)
+        throw err
+    }
+}
+
 export const inviteToRoom = async (userId, roomId) => {
     try {
         await mongoAPI.post('/inviteToRoom', {

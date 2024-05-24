@@ -178,6 +178,38 @@ const approveUser = async (req, res) => {
   }
 };
 
+const rejectUser = async (req, res) => {
+  try {
+    const { userId, roomId } = req.body;
+
+    const room = await Room.findById(roomId);
+
+    if (!room) {
+      return res.status(404).json({
+        success: false,
+        message: "Room not found!",
+      });
+    }
+
+    room.pendingUsers = room.pendingUsers.filter(
+      (pendingUserId) => pendingUserId.toString() !== userId
+    );
+
+    await room.save();
+
+    res.status(200).json({
+      success: true,
+      message: "User rejected successfully!",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Cannot reject user!",
+      error: err.message,
+    });
+  }
+};
+
 const inviteToRoom = async (req, res) => {
   try {
     const { userId, roomId } = req.body;
@@ -293,6 +325,7 @@ module.exports = {
   getAllRooms,
   joinRoom,
   approveUser,
+  rejectUser,
   inviteToRoom,
   leaveRoom,
   getRoomRequests,
