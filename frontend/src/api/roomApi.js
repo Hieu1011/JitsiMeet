@@ -68,10 +68,10 @@ export const rejectUser = async (userId, roomId) => {
     }
 }
 
-export const inviteToRoom = async (userId, roomId) => {
+export const inviteToRoom = async (email, roomId) => {
     try {
         await mongoAPI.post('/inviteToRoom', {
-            userId,
+            email,
             roomId
         })
 

@@ -212,26 +212,42 @@ const rejectUser = async (req, res) => {
 
 const inviteToRoom = async (req, res) => {
   try {
-    const { userId, roomId } = req.body;
+    const { email, roomId } = req.body;
 
+    // Tìm phòng dựa trên roomId
     const room = await Room.findById(roomId);
-    const user = await User.findById(userId);
-
     if (!room) {
       return res.status(404).json({
         success: false,
         message: "Room not found!",
       });
     }
-    if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found!",
-        });
-      }
 
+    // Tìm người dùng dựa trên email
+    const user = await User.findOne({ email: email });
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found!",
+      });
+    }
+
+    // Kiểm tra xem người dùng đã ở trong phòng chưa
+    const isAlreadyParticipant = room.participants.some(
+      participant => participant.userId.toString() === user._id.toString()
+    );
+
+    if (isAlreadyParticipant) {
+      return res.status(400).json({
+        success: false,
+        message: "User is already in the room!",
+      });
+    }
+
+    // Thêm người dùng vào participants
     room.participants.push({
-      userId,
+      userId: user._id,
       joinedAt: new Date(),
     });
 

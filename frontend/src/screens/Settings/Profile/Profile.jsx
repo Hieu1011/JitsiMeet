@@ -46,7 +46,7 @@ const Profile = ({visible, setVisible}) => {
         <View style={styles.content}>
           <View style={styles.avatar}>
             <Image
-              source={images.hero1}
+              source={{uri: userInfo.avatar}}
               resizeMode="cover"
               style={styles.image}
             />

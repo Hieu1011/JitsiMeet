@@ -49,7 +49,7 @@ const Home = ({navigation}) => {
           participant => participant.userId === userInfo.id
         )
       )
-      console.log(userInfo.userId);
+      // console.log(userInfo.userId);
       
 
       setData(filteredRooms)
@@ -207,7 +207,7 @@ const Home = ({navigation}) => {
             }}>
             <Avatar.Image
               style={styles.avatar}
-              source={images.hero1}
+              source={{uri: userInfo.avatar}}
               size={32}
             />
             <Title

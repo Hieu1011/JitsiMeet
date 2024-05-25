@@ -10,21 +10,14 @@ import {
 } from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view'
+import { useSelector } from 'react-redux'
 import { getRoomMembers, getRoomRequests } from '../../../api/roomApi'
 import {COLORS} from '../../../../constants'
 import styles from './member.style'
 
-const renderItem = ({item}) => {
-  return (
-    <View style={styles.item}>
-      <Image style={styles.itemAvt} source={{uri: item.userId.avatarUrl}}/>
-    <Text style={styles.itemText}>{item.userId.username}</Text>
-  </View>
-  )
-}
-
 const Member = ({navigation, route}) => {
   const data = route.params
+  const user = useSelector(state => state.user.info)
 
   const [index, setIndex] = useState(0)
   const [routes] = useState([
@@ -35,6 +28,14 @@ const Member = ({navigation, route}) => {
   const [ownerData, setOwnerData] = useState([])
   const [membersData, setMembersData] = useState([])
 
+  const renderItem = ({item}) => {
+    return (
+      <View style={styles.item}>
+        <Image style={styles.itemAvt} source={{uri: item.userId.avatarUrl}}/>
+      <Text style={styles.itemText}>{item.userId.username} {item.userId._id === user.id ? '(Tôi)': ''}</Text>
+    </View>
+    )
+  }
   useEffect(() => {
     (
       async () => {

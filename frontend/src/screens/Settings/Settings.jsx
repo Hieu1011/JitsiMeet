@@ -134,7 +134,7 @@ const Settings = ({navigation}) => {
     <SafeAreaView
       style={[styles.container, {backgroundColor: theme.colors.background}]}>
       <View style={styles.profile}>
-        <Image source={images.hero1} style={styles.img} />
+        <Image source={{uri: userInfo.avatar}} style={styles.img} />
         <View style={styles.userInfo}>
           <View style={styles.editContainer}>
             <Text style={styles.userName}>{userInfo.name}</Text>

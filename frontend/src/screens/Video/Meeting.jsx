@@ -1,16 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { JitsiMeeting } from '@jitsi/react-native-sdk/index'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
+import {JitsiMeeting} from '@jitsi/react-native-sdk/index'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { ActivityIndicator, View, Text, SafeAreaView } from 'react-native'
-import { LogBox } from 'react-native';
+import {ActivityIndicator, View, Text, SafeAreaView} from 'react-native'
+import {LogBox} from 'react-native'
+import {useSelector} from 'react-redux'
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 
-const Meeting = ({ navigation, route }) => {
+const Meeting = ({navigation, route}) => {
+  const {room} = route.params
   const jitsiMeeting = useRef(null)
-  const { room } = route.params
-  const [token, setToken] = useState('');
-  const [userInfo, setUserInfo] = useState(null);
-  
+  const userInfo = useSelector(state => state.user.info)
+  const [token, setToken] = useState('')
+
   const onReadyToClose = useCallback(() => {
     navigation.navigate('Home')
     jitsiMeeting.current.close()
@@ -23,37 +24,37 @@ const Meeting = ({ navigation, route }) => {
   const getToken = async () => {
     try {
       const tokenRes = await AsyncStorage.getItem('token')
-      if (!tokenRes)
-        return
+      if (!tokenRes) return
       else setToken(tokenRes)
     } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const getUserInfo = async () => {
-    try {
-      const userRes = await AsyncStorage.getItem('userInfo')
-      if (!userRes)
-        return
-      else setUserInfo(JSON.parse(userRes))
-      
-    } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
 
   useEffect(() => {
     getToken()
-    getUserInfo()
   }, [])
 
   // Kiểm tra xem userInfo có giá trị không trước khi truyền vào JitsiMeeting
-  if (!userInfo) {
+  if (!userInfo || token === '') {
     return (
-      <SafeAreaView style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10,}}>
-      <ActivityIndicator size={24}/>
-      <Text style={{fontSize: 16, textAlign: 'center', textAlignVertical: 'center'}}>Loading</Text>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 10
+        }}>
+        <ActivityIndicator size={24} />
+        <Text
+          style={{
+            fontSize: 16,
+            textAlign: 'center',
+            textAlignVertical: 'center'
+          }}>
+          Loading
+        </Text>
       </SafeAreaView>
     )
   }
@@ -66,7 +67,11 @@ const Meeting = ({ navigation, route }) => {
       style={{flex: 1}}
       room={room}
       token={token}
-      userInfo={{displayName: userInfo.context.user.name, email: userInfo.context.user.email}}
+      userInfo={{
+        displayName: userInfo.name,
+        avatarURL: userInfo.avatar,
+        email: userInfo.email
+      }}
       serverURL={'https://8x8.vc/'}
     />
   )

@@ -1,6 +1,10 @@
 const User = require('../models/User.js');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 
+const JWT_SECRET_KEY_PATH = process.env.JWT_SECRET_KEY_PATH;
+const JWT_SECRET_KEY = fs.readFileSync(path.resolve(__dirname, JWT_SECRET_KEY_PATH), 'utf8');
 const register = async (req, res) => {
     try {
         const { email, password, phone, username } = req.body;
@@ -69,29 +73,29 @@ const login = async (req, res) => {
         const now = new Date()
 
         const token = jwt.sign({
-            aud: 'jitsi',
-            context: {
-              user: {
-                id: _id,
-                name: username,
-                avatar: avatarUrl,
-                email: email,
-                moderator: role === 3 ? 'false' : 'true',
-                role: role,
+            "aud": 'jitsi',
+            "context": {
+              "user": {
+                "id": _id,
+                "name": username,
+                "avatar": avatarUrl,
+                "email": email,
+                "moderator": role === 3 ? false : true,
+                "role": role,
               },
-              features: {
-                livestreaming: 'true',
-                recording: 'true',
-                transcription: 'true',
-                "outbound-call": 'true'
+              "features": {
+                "livestreaming": true,
+                "recording": true,
+                "transcription": true,
+                "outbound-call": true
               }
             },
-            iss: 'chat',
-            room: '*',
-            sub: "vpaas-magic-cookie-aa87917959cf4f0f95d3b5eac48edb1e",
-            exp: Math.round((now.setDate(now.getDate() + 5)) / 1000),
-            nbf: (Math.round((new Date).getTime() / 1000) - 10)
-          }, process.env.JWT_SECRET_KEY.replace(/\\n/g, '\n'), { algorithm: 'RS256', header: { kid: "vpaas-magic-cookie-aa87917959cf4f0f95d3b5eac48edb1e/272d95" } })
+            "iss": 'chat',
+            "room": '*',
+            "sub": "vpaas-magic-cookie-aa87917959cf4f0f95d3b5eac48edb1e",
+            "exp": Math.round((now.setDate(now.getDate() + 5)) / 1000),
+            "nbf": (Math.round((new Date).getTime() / 1000) - 10)
+          }, JWT_SECRET_KEY, { algorithm: 'RS256', header: { kid: "vpaas-magic-cookie-aa87917959cf4f0f95d3b5eac48edb1e/f3c094" } })
 
 
         res.status(200).json({

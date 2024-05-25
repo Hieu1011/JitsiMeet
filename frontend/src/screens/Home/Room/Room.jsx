@@ -20,7 +20,14 @@ import {COLORS} from '../../../../constants'
 import Title from '../../../components/Title'
 import {channel} from '../../../../assets/data/channelData'
 import {useSelector} from 'react-redux'
-import {approveUser, deleteRoom, getRoomRequests, leaveRoom} from '../../../api/roomApi'
+import {
+  approveUser,
+  deleteRoom,
+  getRoomRequests,
+  inviteToRoom,
+  leaveRoom,
+  rejectUser
+} from '../../../api/roomApi'
 
 const normalizeString = str => {
   // Xóa dấu tiếng Việt
@@ -46,6 +53,8 @@ const Room = ({route, navigation}) => {
   const data = route.params
 
   const user = useSelector(state => state.user.info)
+
+  const [email, setEmail] = useState('')
   const [requests, setRequests] = useState([])
   const [visible, setVisible] = useState(false)
   const [deleteConfirmModal, setDeleteConfirmModal] = useState(false)
@@ -71,7 +80,13 @@ const Room = ({route, navigation}) => {
   }
 
   const handleInviteMember = async () => {
-
+    try {
+      await inviteToRoom(email, data._id)
+      ToastAndroid.show('Đã mời thành viên!', ToastAndroid.BOTTOM)
+      setEmail('')
+    } catch (err) {
+      ToastAndroid.show('Đã xảy ra lỗi! Vui lòng thử lại', ToastAndroid.BOTTOM)
+    }
   }
 
   const handleApproveMember = async userId => {
@@ -87,7 +102,7 @@ const Room = ({route, navigation}) => {
 
   const handleRejectMember = async userId => {
     try {
-      await rejectRequest(userId, data._id, )
+      await rejectUser(userId, data._id)
       ToastAndroid.show('Đã từ chối yêu cầu!', ToastAndroid.BOTTOM)
       fetchRequests() // Refresh the request list
     } catch (error) {
@@ -162,6 +177,7 @@ const Room = ({route, navigation}) => {
       </View>
 
       <FAB
+        disabled={!user.moderator}
         style={{position: 'absolute', bottom: 10, right: 10}}
         icon="video-outline"
         size="medium"
@@ -184,7 +200,7 @@ const Room = ({route, navigation}) => {
               </Text>
             </TouchableOpacity>
 
-            {user.moderator && (
+            {user.moderator === true && (
               <View>
                 <TouchableOpacity
                   style={styles.modalItem}
@@ -192,7 +208,11 @@ const Room = ({route, navigation}) => {
                     setInviteModalVisible(true)
                     setVisible(false)
                   }}>
-                  <MaterialCommunityIcons name="account-plus-outline" size={24} color={COLORS.black} />
+                  <MaterialCommunityIcons
+                    name="account-plus-outline"
+                    size={24}
+                    color={COLORS.black}
+                  />
                   <Text style={{fontSize: 16, color: COLORS.black}}>
                     Mời thành viên
                   </Text>
@@ -294,7 +314,9 @@ const Room = ({route, navigation}) => {
                 )}
               />
             ) : (
-              <Text style={styles.question}>Hiện tại không có yêu cầu tham gia nào</Text>
+              <Text style={styles.question}>
+                Hiện tại không có yêu cầu tham gia nào
+              </Text>
             )}
           </View>
         </View>
@@ -308,16 +330,26 @@ const Room = ({route, navigation}) => {
         <View style={styles.deleteRoomBackdrop}>
           <View style={styles.deleteRoomModal}>
             <Text style={styles.label}>Nhập email thành viên</Text>
-            <TextInput style={{height: 45, width: 250, marginBottom: 20}} />
+            <TextInput
+              style={{height: 45, width: 250, marginBottom: 20}}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Email"
+              keyboardType="email-address"
+            />
+
             <View style={styles.btnWrapper}>
               <TouchableOpacity
-                onPress={() => setInviteModalVisible(false)}
+                onPress={() => {
+                  setInviteModalVisible(false)
+                  setEmail('')
+                }}
                 style={styles.cancelBtn}>
                 <Text style={styles.btnText}>Hủy</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleInviteMember}
-                style={styles.approveBtn} >
+                style={styles.approveBtn}>
                 <Text style={styles.btnText}>Mời</Text>
               </TouchableOpacity>
             </View>
