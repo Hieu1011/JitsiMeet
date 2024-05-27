@@ -9,7 +9,7 @@ import {
   FlatList,
   Image
 } from 'react-native'
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {FAB, TextInput} from 'react-native-paper'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -28,6 +28,8 @@ import {
   leaveRoom,
   rejectUser
 } from '../../../api/roomApi'
+import {getAllMeetings} from '../../../api/meetingApi'
+import {useFocusEffect} from '@react-navigation/native'
 
 const normalizeString = str => {
   // Xóa dấu tiếng Việt
@@ -56,6 +58,7 @@ const Room = ({route, navigation}) => {
 
   const [email, setEmail] = useState('')
   const [requests, setRequests] = useState([])
+  const [meetings, setMeetings] = useState([])
   const [visible, setVisible] = useState(false)
   const [deleteConfirmModal, setDeleteConfirmModal] = useState(false)
   const [leaveConfirmModal, setLeaveConfirmModal] = useState(false)
@@ -68,7 +71,14 @@ const Room = ({route, navigation}) => {
 
   useEffect(() => {
     fetchRequests()
+    fetchMeetings()
   }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchMeetings()
+    }, [])
+  )
 
   const fetchRequests = async () => {
     try {
@@ -76,6 +86,17 @@ const Room = ({route, navigation}) => {
       setRequests(response.requests)
     } catch (error) {
       console.log(error)
+    }
+  }
+
+  const fetchMeetings = async () => {
+    try {
+      const response = await getAllMeetings(data._id)
+      console.log(response.meetings)
+
+      setMeetings(response.meetings)
+    } catch (err) {
+      console.log(err)
     }
   }
 
@@ -157,23 +178,31 @@ const Room = ({route, navigation}) => {
           <Text style={{fontSize: 14, color: COLORS.black}}>{data.desc}</Text>
         </View>
 
-        {/* <View style={{marginTop: 10}}>
-          {channel
-            .filter(item => item.roomId === data._id)
-            .map(item => (
-              <TouchableOpacity
-                key={item.id}
-                style={{marginVertical: 8, padding: 10, borderWidth: 0.5}}
-                onPress={() =>
-                  navigation.navigate('Channel', {item, roomTitle: data.title})
-                }>
-                <Text
-                  style={{fontSize: 15, fontWeight: 400, color: COLORS.black}}>
-                  {item.title}
-                </Text>
-              </TouchableOpacity>
-            ))}
-        </View> */}
+        <View style={{marginTop: 10}}>
+          {meetings && meetings.length > 0
+            ? meetings.map(item => (
+                <TouchableOpacity
+                  key={item.id}
+                  style={{marginVertical: 8, padding: 10, borderWidth: 0.5}}
+                  onPress={() =>  navigation.navigate('Meeting', {room, data, roomId: data._id})}>
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 400,
+                      color: COLORS.black
+                    }}>
+                    {item.title}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 13
+                    }}>
+                    {item.desc}
+                  </Text>
+                </TouchableOpacity>
+              ))
+            : null}
+        </View>
       </View>
 
       <FAB
@@ -181,7 +210,9 @@ const Room = ({route, navigation}) => {
         style={{position: 'absolute', bottom: 10, right: 10}}
         icon="video-outline"
         size="medium"
-        onPress={() => navigation.navigate('Meeting', {room})}
+        onPress={() =>
+          navigation.navigate('Meeting', {room, data, roomId: data._id})
+        }
       />
       <Modal transparent={true} visible={visible} animationType="slide">
         <Pressable onPress={() => setVisible(false)} style={styles.pressable} />

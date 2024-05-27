@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const cookieParser = require('cookie-parser')
 require('dotenv').config()
 const authRoute = require('./server/routes/authRouter')
+const meetingRoute = require('./server/routes/meetingRouter')
 const roomRoute = require('./server/routes/roomRouter')
 
 const app = express()
@@ -32,6 +33,7 @@ app.use(express.json({limit: '50mb'}));
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use('/api/v1', authRoute)
+app.use('/api/v1', meetingRoute)
 app.use('/api/v1', roomRoute)
 
 app.listen(port, () => {

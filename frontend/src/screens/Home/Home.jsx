@@ -269,7 +269,7 @@ const Home = ({navigation}) => {
             <View
               style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
               <Text style={{fontSize: 14, color: COLORS.black}}>
-                Bạn chưa tham gia phòng nào.
+                Không tìm thấy phòng.
               </Text>
             </View>
           )

@@ -8,12 +8,6 @@ const meetingShema = new mongoose.Schema(
             required: true
         },
 
-        roomId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Room',
-            required: true
-        },
-
         title: {
             type: String,
             required: true
@@ -31,7 +25,7 @@ const meetingShema = new mongoose.Schema(
 
         endTime: {
             type: Date,
-            required: true
+            required: false
         },
 
         participants: [
